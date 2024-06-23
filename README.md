@@ -1,5 +1,3 @@
-# Documento Técnico: Microsserviço em gRPC para Estimativa de Custo e Tempo de Deslocamento
-
 ## Introdução
 Este documento descreve a arquitetura e o funcionamento de um microsserviço baseado em gRPC, projetado para estimar o custo e o tempo de deslocamento entre dois pontos utilizando diversas APIs de serviços REST, incluindo Google Places, Google Maps, Uber e Waze. O objetivo é fornecer uma solução robusta e eficiente para calcular rotas e estimar custos de transporte, integrando dados de múltiplas fontes.
 
