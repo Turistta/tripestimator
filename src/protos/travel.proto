@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package travel;
+
+service TravelEstimator {
+  rpc GetTravelEstimates(TravelRequest) returns (TravelResponse);
+}
+
+service PlaceService {
+  rpc ValidatePlace(PlaceRequest) returns (PlaceResponse);
+}
+
+
+service RouteService {
+  rpc CalculateRoute(RouteRequest) returns (RouteResponse);
+}
+
+service TrafficService {
+  rpc GetTrafficInfo(TrafficRequest) returns (TrafficResponse);
+}
+
+service CostService {
+  rpc EstimateCost(CostRequest) returns (CostResponse);
+}
+
+message TravelRequest {
+  string origin = 1;
+  string destination = 2;
+  string transportation_method = 3; 
+  string departure_time = 4; 
+}
+
+message TravelResponse {
+  RouteInfo route_info = 1;
+  TimeEstimate time_estimate = 2;
+  CostEstimate cost_estimate = 3;
+  repeated string warnings = 4; 
+}
+
+message PlaceRequest {
+  string place = 1;
+}
+
+message PlaceResponse {
+  PlaceInfo place_info = 1;
+  repeated string warnings = 2;
+}
+
+message PlaceInfo {
+  string address = 1;
+  double latitude = 2;
+  double longitude = 3;
+  string place_id = 4;
+  string name = 5;
+  repeated string types = 6;
+  repeated Review reviews = 7;
+  repeated Picture pictures = 8;
+}
+
+message Review {
+  string author_name = 1;
+  string text = 2;
+  double rating = 3;
+  string relative_time_description = 4;
+}
+
+message Picture {
+  string url = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+message RouteRequest {
+  string origin = 1;
+  string destination = 2;
+  string transportation_method = 3; 
+}
+
+message RouteResponse {
+  RouteInfo route_info = 1;
+  repeated string warnings = 2; 
+}
+
+message TrafficRequest {
+  string route_id = 1; 
+}
+
+message TrafficResponse {
+  TimeEstimate time_estimate = 1;
+  repeated string warnings = 2; 
+}
+
+message CostRequest {
+  double distance_km = 1;
+  string traffic_condition = 2;
+}
+
+message CostResponse {
+  CostEstimate cost_estimate = 1;
+  repeated string warnings = 2; 
+}
+
+message RouteInfo {
+  string origin = 1;
+  string destination = 2;
+  double distance_km = 3;
+  string duration = 4;
+  int32 duration_value = 5;
+  string transportation_method = 6;
+  repeated string steps = 7;
+}
+
+
+message TimeEstimate {
+  string estimated_time = 1;
+  string traffic_condition = 2;
+}
+
+message CostEstimate {
+  double estimated_cost = 1;
+}
