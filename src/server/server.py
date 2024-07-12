@@ -9,6 +9,8 @@ from concurrent import futures
 from config import Config
 
 
+# TODO: Implement integration logic. 
+
 class TravelEstimatorServicer(travel_pb2_grpc.TravelEstimatorServicer):
     def __init__(self):
         self.place_service = PlaceService()

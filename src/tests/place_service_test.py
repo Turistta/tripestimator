@@ -26,7 +26,7 @@ def run():
             )
         for picture in response.place_info.pictures:
             print(
-                f"Picture URL: {picture.url}, Width: {picture.width}, Height: {picture.height}"
+                f"Picture URL: https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={picture.url}&key={Config.GOOGLE_MAPS_API_KEY}, Width: {picture.width}, Height: {picture.height}"
             )
 
 
