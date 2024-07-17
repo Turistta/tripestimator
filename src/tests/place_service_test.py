@@ -1,7 +1,7 @@
 from config import Config
-import travel_pb2_grpc
+import travel_pb2_grpc as travel_pb2_grpc
 import grpc
-import travel_pb2
+import travel_pb2 as travel_pb2
 
 
 def run():

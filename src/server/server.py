@@ -1,5 +1,5 @@
 import travel_pb2_grpc as travel_pb2_grpc
-import travel_pb2
+import travel_pb2 as travel_pb2
 import grpc
 from services.traffic_service import TrafficService
 from services.place_service import PlaceService
@@ -8,8 +8,6 @@ from services.cost_service import CostService
 from concurrent import futures
 from config import Config
 
-
-# TODO: Implement integration logic. 
 
 class TravelEstimatorServicer(travel_pb2_grpc.TravelEstimatorServicer):
     def __init__(self):
@@ -79,7 +77,10 @@ class CostServiceServicer(travel_pb2_grpc.CostServiceServicer):
 
     def EstimateCost(self, request, context):
         return self.cost_service.estimate_cost(
-            request.distance_km, request.traffic_condition
+            request.state,
+            request.distance_km,
+            request.time_estimated,
+            request.traffic_condition,
         )
 
 
