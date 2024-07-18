@@ -68,7 +68,15 @@ class TrafficServiceServicer(travel_pb2_grpc.TrafficServiceServicer):
         self.traffic_service = TrafficService()
 
     def GetTrafficInfo(self, request, context):
-        return self.traffic_service.get_traffic_info(request.route_id)
+        self.traffic_service.setup(
+            request.start_coords,
+            request.end_coords,
+            request.vehicle_type,
+            request.avoid_toll_roads,
+            request.avoid_subscription_roads,
+            request.avoid_ferries,
+        )
+        return self.traffic_service.calc_route_info()
 
 
 class CostServiceServicer(travel_pb2_grpc.CostServiceServicer):

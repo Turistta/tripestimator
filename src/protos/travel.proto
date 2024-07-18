@@ -82,7 +82,12 @@ message RouteResponse {
 }
 
 message TrafficRequest {
-  string route_id = 1; 
+  string start_coords = 1;
+  string end_coords = 2;
+  string vehicle_type = 3;  
+  bool avoid_toll_roads = 4;  
+  bool avoid_subscription_roads = 5; 
+  bool avoid_ferries = 6;
 }
 
 message TrafficResponse {
@@ -116,7 +121,7 @@ message RouteInfo {
 message TimeEstimate {
   double distance = 1; 
   int32 estimated_time = 2;
-  string traffic_condition = 3;
+  double traffic_condition = 3;
 }
 
 message CostEstimate {

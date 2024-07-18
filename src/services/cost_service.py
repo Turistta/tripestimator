@@ -64,5 +64,5 @@ class CostService:
             return CostResponse(warnings=[f"Erro de valor: {ve}"])
         except Exception as e:
             return CostResponse(
-                warnings=[f"Ocorreu um erro inesperado: {e}", "AAAAAAAAAAAAAAAAAAAA"]
+                warnings=[f"Ocorreu um erro inesperado: {e}"]
             )
