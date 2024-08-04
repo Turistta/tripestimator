@@ -9,7 +9,7 @@ class Currency(BaseModel):
         str,
         Field(
             default="BRL",
-            regex=r"^[A-Z]{3}$",
+            pattern=r"^[A-Z]{3}$",
             description="Currency code",
             examples=["BTC, USD"],
         ),

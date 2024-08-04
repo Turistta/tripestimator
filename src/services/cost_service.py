@@ -52,9 +52,7 @@ class CostService:
             raise ValueError("Failed to parse fuel price.")
 
         if distance_km <= 0 or time_estimated <= 0:
-            logger.error(
-                f"Invalid distance or time. Distance: {distance_km}, Time: {time_estimated}"
-            )
+            logger.error(f"Invalid distance or time. Distance: {distance_km}, Time: {time_estimated}")
             raise ValueError("Distance and time must be greater than zero.")
 
         traffic_weight = TRAFFIC_CONDITION_WEIGHT.get(traffic_condition, 1.0)
@@ -80,6 +78,4 @@ class CostService:
 
         logger.info(f"Estimated cost: {final_cost:.2f}")
 
-        return CostEstimate(
-            estimated_cost=final_cost, currency=currency, cost_details=cost_components
-        )
+        return CostEstimate(estimated_cost=final_cost, currency=currency, cost_details=cost_components)
