@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from CostEstimate import CostEstimate
+from models.cost_models import CostEstimate
 
 
 class TravelData(BaseModel):
