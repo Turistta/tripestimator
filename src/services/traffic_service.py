@@ -103,7 +103,6 @@ class TrafficService:
         total_time = 0
         total_free_flow_time = 0
         total_length = 0
-        traffic_conditions = []
 
         for segment in results:
             if stop_at_bounds and segment.get("path"):
@@ -144,7 +143,7 @@ class TrafficService:
             avg_free_flow_time = 0
             percentage_difference = 0
 
-        route_time = avg_time / 60.0
+        route_time = avg_time
         route_distance = total_length / 1000.0
         traffic_condition = round(percentage_difference, 3)
 

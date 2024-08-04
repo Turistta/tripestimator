@@ -23,18 +23,12 @@ service CostService {
   rpc EstimateCost(CostRequest) returns (CostResponse);
 }
 
-message TravelRequest {
-  string origin = 1;
-  string destination = 2;
-  string transportation_method = 3; 
-  string departure_time = 4; 
-}
-
+h
 message TravelResponse {
   RouteInfo route_info = 1;
   TimeEstimate time_estimate = 2;
   CostEstimate cost_estimate = 3;
-  repeated string warnings = 4; 
+  repeated string warnings = 4;   
 }
 
 message PlaceRequest {

@@ -49,7 +49,9 @@ class CostService:
 
             # Cálculos
             fuel_cost = (distance_km / FUEL_CONSUME) * fuel_price
-            time_cost = (time_estimated / 60) * TIME_FACTOR # Conversão de segundos para minutos
+            time_cost = (
+                time_estimated / 60
+            ) * TIME_FACTOR  # Conversão de segundos para minutos
             traffic_weight = TRAFFIC_CONDITION_WEIGHT.get(traffic_condition, 1.0)
             final_cost = BASE_COST + (fuel_cost * traffic_weight) + time_cost
 
@@ -63,6 +65,4 @@ class CostService:
         except ValueError as ve:
             return CostResponse(warnings=[f"Erro de valor: {ve}"])
         except Exception as e:
-            return CostResponse(
-                warnings=[f"Ocorreu um erro inesperado: {e}"]
-            )
+            return CostResponse(warnings=[f"Ocorreu um erro inesperado: {e}"])
