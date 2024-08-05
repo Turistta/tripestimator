@@ -1,55 +1,74 @@
+from parsers.place_parsers import PlaceParser, LocationParser, PictureParser, ReviewParser
+from models.place_models import PlaceResponse, PlaceInfo, Location
+from typing import Optional
 from config import Config
 import googlemaps
-from travel_pb2 import PlaceResponse, PlaceInfo, Review, Picture
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class PlaceService:
-    def __init__(self):
-        self.client = googlemaps.Client(key=Config.GOOGLE_MAPS_API_KEY)
+    def __init__(
+        self,
+        place_parser: PlaceParser,
+        location_parser: LocationParser,
+        picture_parser: PictureParser,
+        review_parser: ReviewParser,
+        api_key: str = Config.GOOGLE_MAPS_API_KEY,
+    ):
+        self.client = googlemaps.Client(key=api_key)
+        self.place_parser = place_parser
+        self.location_parser = location_parser
+        self.picture_parser = picture_parser
+        self.review_parser = review_parser
 
-    def validate_place(self, place):
+    def validate_place(self, place: str, api_key: Optional[str] = None) -> PlaceResponse:
+        """Validates a place using Google Maps API and returns PlaceResponse."""
         try:
             geocode_result = self.client.geocode(place)
             if geocode_result:
                 place_id = geocode_result[0]["place_id"]
                 place_details = self.client.place(place_id=place_id)
-                place_info = self._parse_place_info(place_details["result"])
+                place_info = self.place_parser.parse_place_info(place_details["result"], api_key)
                 return PlaceResponse(place_info=place_info)
             else:
-                return PlaceResponse(warnings=["Place not found"])
+                default_place_info = PlaceInfo(
+                    place_id="",
+                    name="",
+                    location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
+                    types=[],
+                    reviews=[],
+                    pictures=[],
+                    ratings_total=0,
+                    opening_hours=[],
+                )
+                return PlaceResponse(place_info=default_place_info)
 
         except googlemaps.exceptions.ApiError as e:
-            return PlaceResponse(warnings=[f"Google Maps API Error: {str(e)}"])
+            logger.error(f"Google Maps API Error: {str(e)}")
+            default_place_info = PlaceInfo(
+                place_id="",
+                name="",
+                location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
+                types=[],
+                reviews=[],
+                pictures=[],
+                ratings_total=0,
+                opening_hours=[],
+            )
+            return PlaceResponse(place_info=default_place_info)
+
         except Exception as e:
-            return PlaceResponse(warnings=[f"Error validating place: {str(e)}"])
-
-    def _parse_place_info(self, place):
-        reviews = [
-            Review(
-                author_name=review.get("author_name", ""),
-                text=review.get("text", ""),
-                rating=review.get("rating", 0.0),
-                relative_time_description=review.get("relative_time_description", ""),
+            logger.error(f"Error validating place: {str(e)}")
+            default_place_info = PlaceInfo(
+                place_id="",
+                name="",
+                location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
+                types=[],
+                reviews=[],
+                pictures=[],
+                ratings_total=0,
+                opening_hours=[],
             )
-            for review in place.get("reviews", [])
-        ]
-
-        pictures = [
-            Picture(
-                url=photo.get("photo_reference", ""),
-                width=photo.get("width", 0),
-                height=photo.get("height", 0),
-            )
-            for photo in place.get("photos", [])
-        ]
-
-        return PlaceInfo(
-            address=place.get("formatted_address", ""),
-            latitude=place["geometry"]["location"]["lat"],
-            longitude=place["geometry"]["location"]["lng"],
-            place_id=place["place_id"],
-            name=place.get("name", ""),
-            types=place.get("types", []),
-            reviews=reviews,
-            pictures=pictures,
-        )
+            return PlaceResponse(place_info=default_place_info)

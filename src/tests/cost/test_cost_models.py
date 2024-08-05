@@ -1,12 +1,10 @@
 from typing import Callable
 import pytest
 from models.cost_models import (
-    CostEstimate,
     CostComponents,
     BASE_COST,
     TIME_FACTOR,
     FUEL_EFFICIENCY,
-    BASE_URL,
 )
 
 
