@@ -60,7 +60,6 @@ class CostComponents(BaseModel):
         """Maps and normalizes the traffic adjustment value based on its weight. Raises an error for unknown values."""
         print(f"Validating value: {value}")
         if isinstance(value, str):
-            value = value.strip().lower()
             if value not in get_args(TrafficCondition):
                 raise ValueError(f"Unknown traffic condition '{value}'")
             return TRAFFIC_CONDITION_WEIGHT[value]

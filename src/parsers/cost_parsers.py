@@ -25,6 +25,6 @@ class CostParser:
 
     def parse_traffic_condition(self, traffic_condition_str: str) -> float:
         try:
-            return TRAFFIC_CONDITION_WEIGHT[traffic_condition_str.lower()]
+            return TRAFFIC_CONDITION_WEIGHT[traffic_condition_str.strip().lower()]
         except KeyError:
             raise ValueError(f"Unknown traffic condition: {traffic_condition_str}")
