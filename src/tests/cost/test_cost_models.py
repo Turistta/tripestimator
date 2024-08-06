@@ -1,20 +1,15 @@
 from typing import Callable
 import pytest
-from models.cost_models import (
-    CostComponents,
-    BASE_COST,
-    TIME_FACTOR,
-    FUEL_EFFICIENCY,
-)
+from models.cost_models import CostComponents
 
 
 @pytest.fixture
 def valid_cost_components():
     kwargs = {
-        "base_cost": BASE_COST,
-        "time_cost": TIME_FACTOR,
+        "base_cost": 0,
+        "time_cost": 0,
         "fuel_price": 5.0,
-        "fuel_consumption": FUEL_EFFICIENCY,
+        "fuel_consumption": 0,
         "traffic_adjustment": 1.0,
         "traffic_description": "Valid traffic description.",
     }
