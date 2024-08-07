@@ -17,7 +17,6 @@ class PlaceParser:
 
     @staticmethod
     def _parse_place(place: Dict[str, Any]) -> PlaceInfo:
-        print(place)
         return PlaceInfo(
             place_id=place.get("place_id", ""),
             name=place.get("name", ""),
@@ -41,7 +40,6 @@ class PlaceParser:
 
     @staticmethod
     def _parse_reviews(reviews: List[Dict[str, Any]]) -> List[Review]:
-        print(reviews)
         return [
             Review(
                 author_name=review.get("author_name", ""),

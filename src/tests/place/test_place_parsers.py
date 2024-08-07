@@ -9,7 +9,7 @@ class TestPlaceParser:
 
     @pytest.fixture
     def valid_textsearch_response(self):
-        """Provides a sample JSON response for textsearch type."""
+        """Sample JSON response for textsearch query"""
         return {
             "results": [
                 {
@@ -49,8 +49,30 @@ class TestPlaceParser:
             ]
         }
 
+    @pytest.fixture
+    def valid_findplacefromtext_response(self):
+        """Sample JSON response for findplacefromtext query"""
+        return {
+            "candidates": [
+                {
+                    "formatted_address": "San Martín 51, B6700CCU Luján, Provincia de Buenos Aires, Argentina",
+                    "geometry": {
+                        "location": {"lat": -34.56389, "lng": 59.1212854},
+                        "viewport": {
+                            "northeast": {"lat": -34.56383377010728, "lng": 59.12128543456332},
+                            "southwest": {"lat": -34.56389456632343, "lng": 59.12128544567865},
+                        },
+                    },
+                    "name": "Basilica de Luján",
+                    "opening_hours": {"open_now": False},
+                    "rating": 4.7,
+                },
+            ],
+            "status": "OK",
+        }
+
     def test_parse_textsearch(self, valid_textsearch_response):
-        """Tests parsing of textsearch response."""
+        """Tests parsing of textsearch response"""
         places = PlaceParser.parse(valid_textsearch_response, "textsearch")
         assert len(places) == 1
         place = places[0]
@@ -63,21 +85,25 @@ class TestPlaceParser:
         assert isinstance(place.pictures[0], Picture)
         assert isinstance(place.opening_hours, dict) and len(place.opening_hours) == 7
 
-    def test_parse_findplacefromtext(self):
-        """Tests findplacefromtext (similar to textsearch)."""
-        # ... similar test structure, use different sample data if needed
+    def test_parse_findplacefromtext(self, valid_findplacefromtext_response):
+        """Tests parsing of findplacefromtext response"""
+        places = PlaceParser.parse(valid_findplacefromtext_response, "findplacefromtext")
+        assert len(places) == 1
+        place = places[0]
 
-    def test_parse_nearbysearch(self):
-        """Tests nearbysearch (similar to textsearch)."""
-        # ... similar test structure, use different sample data if needed
+        assert isinstance(place, PlaceInfo)
+        assert place.name == "Basilica de Luján"
+        assert isinstance(place.location, Location)
+        assert place.location.address == "San Martín 51, B6700CCU Luján, Provincia de Buenos Aires, Argentina"
+        assert isinstance(place.opening_hours, dict) and len(place.opening_hours) == 7
 
     def test_parse_invalid_response_type(self):
-        """Tests behavior with an unsupported response type."""
+        """Tests behavior with an unsupported response type"""
         with pytest.raises(ValueError):
             PlaceParser.parse({}, "invalid_type")
 
     def test_parse_empty_results(self):
-        """Tests behavior when results list is empty."""
+        """Tests behavior when results list is empty"""
         empty_response = {"results": []}
         places = PlaceParser.parse(empty_response, "textsearch")
         assert len(places) == 0
@@ -97,7 +123,7 @@ class TestPlaceParser:
         places = PlaceParser.parse(response_missing_fields, "textsearch")
         assert len(places) == 1
         place = places[0]
-        assert place.reviews == []  # Should be an empty list
+        assert place.reviews == []
         assert place.pictures == []
         assert place.opening_hours == {
             "Friday": "Closed",

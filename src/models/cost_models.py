@@ -58,7 +58,6 @@ class CostComponents(BaseModel):
     @classmethod
     def validate_traffic_adjustment(cls, value) -> float:
         """Maps and normalizes the traffic adjustment value based on its weight. Raises an error for unknown values."""
-        print(f"Validating value: {value}")
         if isinstance(value, str):
             if value not in get_args(TrafficCondition):
                 raise ValueError(f"Unknown traffic condition '{value}'")
