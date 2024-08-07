@@ -1,4 +1,4 @@
-from typing import Annotated, Dict, Optional, Literal, Union, Final, get_args
+from typing import Annotated, Dict, Literal, Union, Final, get_args
 from pydantic import BaseModel, Field, field_validator
 from models.utils_models import Currency
 

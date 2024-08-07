@@ -1,74 +1,33 @@
-from parsers.place_parsers import PlaceParser, LocationParser, PictureParser, ReviewParser
-from models.place_models import PlaceResponse, PlaceInfo, Location
-from typing import Optional
-from config import Config
-import googlemaps
+from models.place_models import PlaceInfo, BaseQueryParams, QueryParamsFactory
+from fetchers.place_fetcher import PlaceFetcher
+from parsers.place_parsers import PlaceParser
+from typing import List
 import logging
+
 
 logger = logging.getLogger(__name__)
 
 
 class PlaceService:
-    def __init__(
-        self,
-        place_parser: PlaceParser,
-        location_parser: LocationParser,
-        picture_parser: PictureParser,
-        review_parser: ReviewParser,
-        api_key: str = Config.GOOGLE_MAPS_API_KEY,
-    ):
-        self.client = googlemaps.Client(key=api_key)
-        self.place_parser = place_parser
-        self.location_parser = location_parser
-        self.picture_parser = picture_parser
-        self.review_parser = review_parser
+    def __init__(self, fetcher: PlaceFetcher, parser: PlaceParser) -> None:
+        self.fetcher = fetcher
+        self.parser = parser
 
-    def validate_place(self, place: str, api_key: Optional[str] = None) -> PlaceResponse:
-        """Validates a place using Google Maps API and returns PlaceResponse."""
-        try:
-            geocode_result = self.client.geocode(place)
-            if geocode_result:
-                place_id = geocode_result[0]["place_id"]
-                place_details = self.client.place(place_id=place_id)
-                place_info = self.place_parser.parse_place_info(place_details["result"], api_key)
-                return PlaceResponse(place_info=place_info)
-            else:
-                default_place_info = PlaceInfo(
-                    place_id="",
-                    name="",
-                    location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
-                    types=[],
-                    reviews=[],
-                    pictures=[],
-                    ratings_total=0,
-                    opening_hours=[],
-                )
-                return PlaceResponse(place_info=default_place_info)
+    def fetch_places(self, query_params: BaseQueryParams) -> List[PlaceInfo]:
+        factory = QueryParamsFactory(query_params.model_dump())
+        query_params_instance = factory.create_query_model()  # Instatiated class
+        query_type = self._get_query_type(query_params_instance)
+        query_params_instance._query_type = query_type  # Usage in fetcher.
+        response_data = self.fetcher.fetch(query_params_instance)
+        places = self.parser.parse(
+            response=response_data, _response_type=query_type
+        )  # Same logic, different approach.This can be simplified
+        return places
 
-        except googlemaps.exceptions.ApiError as e:
-            logger.error(f"Google Maps API Error: {str(e)}")
-            default_place_info = PlaceInfo(
-                place_id="",
-                name="",
-                location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
-                types=[],
-                reviews=[],
-                pictures=[],
-                ratings_total=0,
-                opening_hours=[],
-            )
-            return PlaceResponse(place_info=default_place_info)
-
-        except Exception as e:
-            logger.error(f"Error validating place: {str(e)}")
-            default_place_info = PlaceInfo(
-                place_id="",
-                name="",
-                location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
-                types=[],
-                reviews=[],
-                pictures=[],
-                ratings_total=0,
-                opening_hours=[],
-            )
-            return PlaceResponse(place_info=default_place_info)
+    def _get_query_type(self, query_model: BaseQueryParams) -> str:
+        query_type_mapping = {
+            "NearbySearchQueryParams": "nearbysearch",
+            "FindPlaceQueryParams": "findplacefromtext",
+            "TextSearchQueryParams": "textsearch",
+        }
+        return query_type_mapping.get(query_model.__class__.__name__)

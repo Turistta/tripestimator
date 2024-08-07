@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class CostParser:
-    def parse_fuel_price(self, html_text: str) -> float:
+    def parse(self, html_text: str) -> float:
         try:
             soup = BeautifulSoup(html_text, "html.parser")
             price_element = soup.find(id="telafinal-precofinal")

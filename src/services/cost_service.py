@@ -1,18 +1,17 @@
-# In services/cost_service.py
-import logging
-from calculators.base_cost_calculator import BaseCostCalculator
-from parsers.cost_parsers import CostParser
-from fetchers.cost_fetcher import CostFetcher
 from models.cost_models import CostEstimate, CostEstimationParams, CostComponents, Currency
+from calculators.base_cost_calculator import BaseCostCalculator
+from fetchers.cost_fetcher import CostFetcher
+from parsers.cost_parsers import CostParser
+import logging
 
 logger = logging.getLogger(__name__)
 
 
 class CostService:
-    def __init__(self, calculator: BaseCostCalculator, parser: CostParser, fetcher: CostFetcher):
-        self.calculator = calculator
-        self.parser = parser
+    def __init__(self, calculator: BaseCostCalculator, parser: CostParser, fetcher: CostFetcher) -> None:
         self.fetcher = fetcher
+        self.parser = parser
+        self.calculator = calculator
 
     def estimate_cost(self, params: CostEstimationParams) -> CostEstimate:
         logger.info(
@@ -21,7 +20,7 @@ class CostService:
         )
 
         raw_data = self.fetcher.fetch(params.state)
-        fuel_price = self.parser.parse_fuel_price(raw_data)
+        fuel_price = self.parser.parse(raw_data)
         traffic_weight = self.parser.parse_traffic_condition(params.traffic_condition)
 
         final_cost = self.calculator.estimate_cost(

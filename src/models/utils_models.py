@@ -2,6 +2,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 
+
 class Currency(BaseModel):
     """Currency handler and parser"""
 

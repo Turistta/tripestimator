@@ -1,112 +1,89 @@
-from models.place_models import Location, Picture, Review, PlaceInfo, BASE_URL
-from pydantic import ValidationError, SecretStr
-from typing import Dict, List, Optional
-from typing import TypeVar
+from models.place_models import PlaceInfo, Location, Picture, Review, Coordinates
+from typing import Dict, Any, List
+from pydantic import HttpUrl
+from models.place_models import DAYS_OF_WEEK
 import pendulum
-import logging
-
-logger = logging.getLogger(__name__)
-
-T = TypeVar("T")
-
-
-class LocationParser:
-    @staticmethod
-    def parse_location(place: Dict) -> Location:
-        """Parses location data from a place dictionary. Returns an empty Location if the data is invalid."""
-        if not place.get("geometry", {}).get("location"):
-            logger.warning("Location parsing error: Missing geometry or location data")
-            return Location(address="", plus_code="", latitude=0.0, longitude=0.0)
-
-        try:
-            return Location(
-                address=place.get("formatted_address", ""),
-                plus_code=place.get("plus_code", ""),
-                latitude=place["geometry"]["location"]["lat"],
-                longitude=place["geometry"]["location"]["lng"],
-            )
-        except KeyError as e:
-            logger.error(f"Location parsing error: Unexpected missing key {e} in place data: {place}")
-            return Location(address="", plus_code="", latitude=0.0, longitude=0.0)
-
-
-class PictureParser:
-    @staticmethod
-    def parse_pictures(
-        pictures_data: List[Dict], api_key: Optional[str] = None, width: Optional[T] = 400
-    ) -> List[Picture]:
-        """Parses picture data from a list of dictionaries, optionally using api_key for photo URLs."""
-        try:
-            width_str = width if isinstance(width, str) else str(width)
-            return [
-                Picture(
-                    url=(
-                        f"{BASE_URL}photo?maxwidth={width_str}&photoreference={photo.get('photo_reference', '')}&key={api_key}"
-                        if api_key
-                        else ""
-                    ),
-                    width=photo.get("width", 0),
-                    height=photo.get("height", 0),
-                )
-                for photo in pictures_data
-            ]
-        except KeyError as e:
-            logger.error(f"Pictures parsing error: Unexpected missing key {e} in pictures data: {pictures_data}")
-            return []
-        except (TypeError, ValueError) as e:
-            logger.error(f"Picture parsing error: {e}")
-            return []
-
-
-class ReviewParser:
-    @staticmethod
-    def parse_reviews(reviews_data: List[Dict]) -> List[Review]:
-        """Parses review data from a list of dictionaries."""
-        try:
-            return [
-                Review(
-                    author_name=review.get("author_name", ""),
-                    author_profile=review.get("author_url", ""),
-                    language=review.get("language", ""),
-                    text=review.get("text", ""),
-                    rating=review.get("rating", 0.0),
-                    publication_timestamp=pendulum.parse(review.get("time", ""), strict=False),
-                )
-                for review in reviews_data
-            ]
-        except (KeyError, pendulum.parsing.exceptions.ParserError) as e:
-            logger.error(f"Reviews parsing error: {e} in reviews data: {reviews_data}")
-            return []
 
 
 class PlaceParser:
     @staticmethod
-    def parse_place_info(place: Dict, api_key: Optional[str] = None) -> PlaceInfo:
-        """Parses complete place information, optionally using api_key for the photo URLs."""
-        try:
-            pictures = PictureParser.parse_pictures(place.get("photos", []), api_key)
-            location = LocationParser.parse_location(place)
-            reviews = ReviewParser.parse_reviews(place.get("reviews", []))
+    def parse(response: str, _response_type: str) -> List[PlaceInfo]:
+        if _response_type == "textsearch" or _response_type == "nearbysearch":
+            return [PlaceParser._parse_place(place) for place in response.get("results", [])]
+        elif _response_type == "findplacefromtext":
+            return [PlaceParser._parse_place(place) for place in response.get("candidates", [])]
+        else:
+            raise ValueError(f"Unknown response type: {_response_type}")  # Exception treated by builder?
 
-            return PlaceInfo(
-                place_id=place.get("place_id", ""),
-                name=place.get("name", ""),
-                location=location,
-                types=place.get("types", []),
-                reviews=reviews,
-                pictures=pictures,
-                ratings_total=place.get("user_ratings_total", 0),
-                opening_hours=place.get("opening_hours", {}).get("periods", []),
+    @staticmethod
+    def _parse_place(place: Dict[str, Any]) -> PlaceInfo:
+        print(place)
+        return PlaceInfo(
+            place_id=place.get("place_id", ""),
+            name=place.get("name", ""),
+            location=PlaceParser._parse_location(place),
+            types=place.get("types", []),
+            reviews=PlaceParser._parse_reviews(place.get("reviews", [])),
+            pictures=PlaceParser._parse_pictures(place.get("photos", [])),
+            ratings_total=place.get("user_ratings_total", 0),
+            opening_hours=PlaceParser._parse_opening_hours(place.get("opening_hours", {})),
+        )
+
+    @staticmethod
+    def _parse_location(place: Dict[str, Any]) -> Location:
+        geometry = place.get("geometry", {})
+        location = geometry.get("location", {})
+        return Location(
+            address=place.get("formatted_address", ""),
+            plus_code=place.get("plus_code", {}).get("compound_code", ""),
+            coordinates=Coordinates(latitude=location.get("lat", 0.0), longitude=location.get("lng", 0.0)),
+        )
+
+    @staticmethod
+    def _parse_reviews(reviews: List[Dict[str, Any]]) -> List[Review]:
+        print(reviews)
+        return [
+            Review(
+                author_name=review.get("author_name", ""),
+                author_profile=HttpUrl(review.get("author_url", "")),
+                language=review.get("language", ""),
+                text=review.get("text", ""),
+                rating=review.get("rating", 0.0),
+                publication_timestamp=pendulum.from_timestamp(review.get("time", "")),
+            )  # Fix timezones from datetime - PR: https://github.com/sdispater/pendulum/pull/831
+            for review in reviews
+        ]
+
+    @staticmethod
+    def _parse_pictures(photos: List[Dict[str, Any]]) -> List[Picture]:
+        return [
+            Picture(
+                url=HttpUrl(
+                    f"https://maps.googleapis.com/maps/api/place/photo?maxwidth={photo.get('width', 400)}&photoreference={photo.get('photo_reference')}&key={{GOOGLE_API_KEY}}"
+                ),
+                width=photo.get("width", 400),
+                height=photo.get("height", 400),
             )
-        except ValidationError as e:
-            logger.error(f"PlaceInfo validation error: {e} in place data: {place}")
-            return PlaceInfo(
-                place_id="",
-                name="",
-                location=Location(address="", plus_code="", latitude=0.0, longitude=0.0),
-                types=[],
-                reviews=[],
-                pictures=[],
-                ratings_total=0,
-                opening_hours=[],
-            )
+            for photo in photos
+        ]
+
+    @staticmethod
+    def _parse_opening_hours(opening_hours: Dict[str, any]) -> Dict[str, str]:
+        intervals = {}
+
+        if opening_hours and "periods" in opening_hours:
+            for period in opening_hours["periods"]:
+                day_index = period["open"]["day"]
+                day_name = DAYS_OF_WEEK[day_index]
+
+                open_time = pendulum.parse(period["open"]["time"], strict=False).format("HH:mm")
+                close_time = pendulum.parse(period["close"]["time"], strict=False).format("HH:mm")
+
+                if close_time < open_time:
+                    close_time = pendulum.parse(period["close"]["time"], strict=False).add(days=1).format("HH:mm")
+
+                intervals[day_name] = f"{open_time}-{close_time}"
+        for day in DAYS_OF_WEEK:
+            if day not in intervals:
+                intervals[day] = "Closed"
+        return intervals

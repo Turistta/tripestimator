@@ -10,27 +10,27 @@ def cost_parser():
 
 class TestCostParser:
 
-    def test_parse_fuel_price_valid(self, cost_parser):
+    def test_parse_valid(self, cost_parser):
         """Test if the method correctly parses a valid fuel price"""
         html = '<div id="telafinal-precofinal">5,67</div>'
-        assert cost_parser.parse_fuel_price(html) == 5.67
+        assert cost_parser.parse(html) == 5.67
 
-    def test_parse_fuel_price_invalid_format(self, cost_parser):
+    def test_parse_invalid_format(self, cost_parser):
         """Test if the method raises a ValueError when the price format is invalid"""
         html = '<div id="telafinal-precofinal">invalid</div>'
         with pytest.raises(ValueError, match="Failed to parse fuel price"):
-            cost_parser.parse_fuel_price(html)
+            cost_parser.parse(html)
 
-    def test_parse_fuel_price_missing_element(self, cost_parser):
+    def test_parse_missing_element(self, cost_parser):
         """Test if the method raises a ValueError when the price element is missing"""
         html = "<div>No price here</div>"
         with pytest.raises(ValueError, match="Price element not found in HTML"):
-            cost_parser.parse_fuel_price(html)
+            cost_parser.parse(html)
 
-    def test_parse_fuel_price_empty_html(self, cost_parser):
+    def test_parse_empty_html(self, cost_parser):
         """Test if the method raises a ValueError when given empty HTML"""
         with pytest.raises(ValueError, match="Failed to parse fuel price"):
-            cost_parser.parse_fuel_price("")
+            cost_parser.parse("")
 
     @pytest.mark.parametrize(
         "condition, expected",
