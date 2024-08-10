@@ -1,6 +1,7 @@
 from pydantic import BaseModel
-from models.place_models import PlaceInfo
+
 from models.cost_models import CostEstimate
+from models.place_models import PlaceInfo
 
 
 class TravelInfo(BaseModel):

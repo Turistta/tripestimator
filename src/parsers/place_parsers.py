@@ -1,19 +1,33 @@
-from models.place_models import PlaceInfo, Location, Picture, Review, Coordinates
-from typing import Dict, Any, List
-from pydantic import HttpUrl
-from models.place_models import DAYS_OF_WEEK
+import json
+from json import JSONDecodeError
+from typing import Any, Dict, List
+
 import pendulum
+from pydantic_core import Url
+
+from models.place_models import (
+    DAYS_OF_WEEK,
+    Coordinates,
+    Location,
+    Picture,
+    PlaceInfo,
+    Review,
+)
 
 
 class PlaceParser:
     @staticmethod
     def parse(response: str, _response_type: str) -> List[PlaceInfo]:
-        if _response_type == "textsearch" or _response_type == "nearbysearch":
-            return [PlaceParser._parse_place(place) for place in response.get("results", [])]
-        elif _response_type == "findplacefromtext":
-            return [PlaceParser._parse_place(place) for place in response.get("candidates", [])]
-        else:
-            raise ValueError(f"Unknown response type: {_response_type}")  # Exception treated by builder?
+        try:
+            json_response = json.loads(response)
+            if _response_type == "textsearch" or _response_type == "nearbysearch":
+                return [PlaceParser._parse_place(place) for place in json_response.get("results", [])]
+            elif _response_type == "findplacefromtext":
+                return [PlaceParser._parse_place(place) for place in json_response.get("candidates", [])]
+            else:
+                raise ValueError(f"Unknown response type: {_response_type}")  # Exception treated by builder?
+        except JSONDecodeError as e:
+            raise e
 
     @staticmethod
     def _parse_place(place: Dict[str, Any]) -> PlaceInfo:
@@ -43,11 +57,11 @@ class PlaceParser:
         return [
             Review(
                 author_name=review.get("author_name", ""),
-                author_profile=HttpUrl(review.get("author_url", "")),
+                author_profile=Url(review.get("author_url", "")),
                 language=review.get("language", ""),
                 text=review.get("text", ""),
                 rating=review.get("rating", 0.0),
-                publication_timestamp=pendulum.from_timestamp(review.get("time", "")),
+                publication_timestamp=pendulum.from_timestamp(review.get("time", 0)),  # type: ignore
             )  # Fix timezones from datetime - PR: https://github.com/sdispater/pendulum/pull/831
             for review in reviews
         ]
@@ -56,8 +70,9 @@ class PlaceParser:
     def _parse_pictures(photos: List[Dict[str, Any]]) -> List[Picture]:
         return [
             Picture(
-                url=HttpUrl(
-                    f"https://maps.googleapis.com/maps/api/place/photo?maxwidth={photo.get('width', 400)}&photoreference={photo.get('photo_reference')}&key={{GOOGLE_API_KEY}}"
+                url=Url(
+                    f"https://maps.googleapis.com/maps/api/place/photo?maxwidth={photo.get('width', 400)}"
+                    + f"&photoreference={photo.get('photo_reference')}&key={{GOOGLE_API_KEY}}"
                 ),
                 width=photo.get("width", 400),
                 height=photo.get("height", 400),
@@ -66,7 +81,7 @@ class PlaceParser:
         ]
 
     @staticmethod
-    def _parse_opening_hours(opening_hours: Dict[str, any]) -> Dict[str, str]:
+    def _parse_opening_hours(opening_hours: Dict[str, Any]) -> Dict[str, str]:
         intervals = {}
 
         if opening_hours and "periods" in opening_hours:
@@ -74,11 +89,11 @@ class PlaceParser:
                 day_index = period["open"]["day"]
                 day_name = DAYS_OF_WEEK[day_index]
 
-                open_time = pendulum.parse(period["open"]["time"], strict=False).format("HH:mm")
-                close_time = pendulum.parse(period["close"]["time"], strict=False).format("HH:mm")
+                open_time = pendulum.parse(period["open"]["time"], strict=False).format("HH:mm")  # type: ignore
+                close_time = pendulum.parse(period["close"]["time"], strict=False).format("HH:mm")  # type: ignore
 
                 if close_time < open_time:
-                    close_time = pendulum.parse(period["close"]["time"], strict=False).add(days=1).format("HH:mm")
+                    close_time = pendulum.parse(period["close"]["time"], strict=False).add(days=1).format("HH:mm")  # type: ignore
 
                 intervals[day_name] = f"{open_time}-{close_time}"
         for day in DAYS_OF_WEEK:

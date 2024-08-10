@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field, HttpUrl, ValidationError, ConfigDict
-from typing import List, Annotated, Optional, Dict, Literal, Final
-from pydantic_extra_types.pendulum_dt import DateTime
-from pydantic.types import SecretStr
-from config import settings
+from typing import Annotated, Dict, Final, List, Literal, Optional
+
 import pendulum
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
+from pydantic_extra_types.pendulum_dt import DateTime
+
+from config import settings
 
 DAYS_OF_WEEK: Final = [pendulum.from_timestamp(0).add(days=i).format("dddd") for i in range(7)]
 
@@ -16,10 +17,10 @@ class Coordinates(BaseModel):
 class BaseQueryParams(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    api_key: SecretStr = settings.google_api_key
+    api_key: str = settings.google_api_key  # type: ignore
 
 
-class NearbySearchQueryParams(BaseModel):
+class NearbySearchQueryParams(BaseQueryParams):
     location: Annotated[
         Coordinates,
         Field(
@@ -50,7 +51,8 @@ class NearbySearchQueryParams(BaseModel):
             None,
             ge=0,
             le=4,
-            description="Restricts results to only those places within the specified maximum price range. Values range from 0 (most affordable) to 4 (most expensive).",
+            description="Restricts results to only those places within the specified maximum price range. Values range"
+            + " from 0 (most affordable) to 4 (most expensive).",
         ),
     ]
     minprice: Annotated[
@@ -59,7 +61,8 @@ class NearbySearchQueryParams(BaseModel):
             None,
             ge=0,
             le=4,
-            description="Restricts results to only those places within the specified minimum price range. Values range from 0 (most affordable) to 4 (most expensive).",
+            description="Restricts results to only those places within the specified minimum price range. Values range"
+            + " from 0 (most affordable) to 4 (most expensive).",
         ),
     ]
     opennow: Annotated[
@@ -76,7 +79,7 @@ class NearbySearchQueryParams(BaseModel):
     ]
 
 
-class FindPlaceQueryParams(BaseModel):
+class FindPlaceQueryParams(BaseQueryParams):
     text_input: Annotated[
         str,
         Field(
@@ -112,7 +115,7 @@ class FindPlaceQueryParams(BaseModel):
     ]
 
 
-class TextSearchQueryParams(BaseModel):
+class TextSearchQueryParams(BaseQueryParams):
     query: Annotated[
         str,
         Field(
@@ -148,7 +151,8 @@ class TextSearchQueryParams(BaseModel):
             None,
             ge=0,
             le=4,
-            description="Restricts results to only those places within the specified maximum price range. Values range from 0 (most affordable) to 4 (most expensive).",
+            description="Restricts results to only those places within the specified maximum price range. Values range"
+            + " from 0 (most affordable) to 4 (most expensive).",
             examples=[0, 2, 4],
         ),
     ]
@@ -159,7 +163,8 @@ class TextSearchQueryParams(BaseModel):
             None,
             ge=0,
             le=4,
-            description="Restricts results to only those places within the specified minimum price range. Values range from 0 (most affordable) to 4 (most expensive).",
+            description="Restricts results to only those places within the specified minimum price range. Values range"
+            + " from 0 (most affordable) to 4 (most expensive).",
             examples=[0, 1, 3],
         ),
     ]
@@ -196,7 +201,7 @@ class QueryParamsFactory:
         self.params = query_params
         self.query_params_class = self._determine_query_params_class()
 
-    def _determine_query_params_class(self) -> BaseQueryParams:
+    def _determine_query_params_class(self) -> type[BaseQueryParams]:
         if not self.params:
             raise ValueError("Invalid parameters: Empty query")
         if set(self.params).issubset(NearbySearchQueryParams.model_fields.keys()):

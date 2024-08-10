@@ -1,7 +1,8 @@
-from requests.exceptions import HTTPError
-from typing import Final
-import requests
 import logging
+from typing import Final
+
+import requests
+from requests.exceptions import HTTPError
 
 BASE_URL: Final = "https://precos.petrobras.com.br/web/precos-dos-combustiveis/w/gasolina/"
 
