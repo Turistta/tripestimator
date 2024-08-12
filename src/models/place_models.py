@@ -3,6 +3,7 @@ from typing import Annotated, Dict, Final, List, Literal, Optional
 import pendulum
 from pydantic import BaseModel, Field, HttpUrl, ValidationError
 from pydantic_extra_types.pendulum_dt import DateTime
+
 from .utils_models import BaseQueryParams
 
 DAYS_OF_WEEK: Final = [pendulum.from_timestamp(0).add(days=i).format("dddd") for i in range(7)]
@@ -14,7 +15,7 @@ class Coordinates(BaseModel):
 
 
 class NearbySearchQueryParams(BaseQueryParams):
-    location: Annotated[
+    location: Annotated[    
         Coordinates,
         Field(
             ...,

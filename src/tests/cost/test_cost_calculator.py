@@ -1,4 +1,5 @@
 import pytest
+
 from calculators.default_cost_calculator import DefaultCostCalculator
 
 

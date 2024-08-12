@@ -13,5 +13,5 @@ class RouteBuilder:
         self.route_service = RouteService(fetcher, parser)
 
     def build(self, params: RouteQueryParams) -> List[Route]:
-        # TODO: Return actuall List, recursive calls.
+        # TODO: Return actual List, recursive calls.
         return [self.route_service.get_route(params)]

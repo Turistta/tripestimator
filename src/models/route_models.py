@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Union
 
 import pendulum
 from pydantic import BaseModel, Field, ValidationInfo, field_serializer, field_validator
@@ -41,10 +41,10 @@ class Transportation(BaseModel):
         ),
     ]
     details: Annotated[
-        Optional[str],
+        Optional[Union[str, int]],
         Field(
             default=None,
-            description="Additional details about the transportation",
+            description="Additional details about the transportation. It can contain The expected Fuel comsumption.",
             examples=["Express bus", "Shared ride", None],
         ),
     ]
@@ -53,7 +53,7 @@ class Transportation(BaseModel):
     @classmethod
     def provider_not_empty(cls, v: Optional[str]) -> Optional[str]:
         if v is not None and v.strip() == "":
-            raise ValueError("Provider cannot be an empty string")
+            raise ValueError("provider field cannot be an empty string")
         return v
 
 
