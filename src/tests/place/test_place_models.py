@@ -1,9 +1,9 @@
 import pytest
-from pydantic import ValidationError
+
 from models.place_models import (
-    QueryParamsFactory,
-    NearbySearchQueryParams,
     FindPlaceQueryParams,
+    NearbySearchQueryParams,
+    QueryParamsFactory,
     TextSearchQueryParams,
 )
 

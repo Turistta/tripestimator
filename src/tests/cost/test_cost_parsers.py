@@ -1,6 +1,7 @@
 import pytest
-from parsers.cost_parsers import CostParser
+
 from models.cost_models import TRAFFIC_CONDITION_WEIGHT
+from parsers.cost_parsers import CostParser
 
 
 @pytest.fixture

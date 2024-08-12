@@ -1,55 +1,33 @@
-from config import Config
-import googlemaps
-from travel_pb2 import RouteResponse, RouteInfo
+import logging
+
+from fetchers.route_fetcher import RouteFetcher
+from models.route_models import Route, RouteQueryParams
+from parsers.route_parsers import RouteParser
+
+logger = logging.getLogger(__name__)
 
 
 class RouteService:
-    def __init__(self):
-        self.client = googlemaps.Client(key=Config.GOOGLE_MAPS_API_KEY)
+    def __init__(self, fetcher: RouteFetcher, parser: RouteParser) -> None:
+        self.fetcher = fetcher
+        self.parser = parser
 
-    def calculate_route(self, origin, destination, transportation_method):
+    def get_route(self, query_params: RouteQueryParams) -> Route:
+        logger.info(f"Fetching route with query params: {query_params}")
+
         try:
-            directions = self.client.directions(
-                origin=origin,
-                destination=destination,
-                mode=transportation_method,
-                departure_time="now",
-                alternatives=True,
-                traffic_model="best_guess",
-            )
-
-            if directions:
-                best_route = self._select_best_route(directions)
-                route_info = self._parse_route_info(best_route, transportation_method)
-                return RouteResponse(route_info=route_info)
-            else:
-                return RouteResponse(warnings=["No route found"])
-
-        except googlemaps.exceptions.ApiError as e:
-            return RouteResponse(warnings=[f"Google Maps API Error: {str(e)}"])
+            raw_data = self.fetcher.fetch(query_params)
+            logger.debug("Raw data fetched")
         except Exception as e:
-            return RouteResponse(warnings=[f"Error calculating route: {str(e)}"])
+            logger.error(f"Error fetching route data: {e}")
+            raise
 
-    def _select_best_route(self, directions):
-        """
-        Chooses the best route based on distance, duration, and traffic conditions.
-        """
-        best_route = min(
-            directions,
-            key=lambda route: route["legs"][0]["duration_in_traffic"]["value"],
-        )
-        return best_route
+        try:
+            route = self.parser.parse(raw_data, transportation_mode=query_params.mode)
+            logger.info("Route parsed successfully.")
+        except Exception as e:
+            logger.error(f"Error parsing route data: {e}")
+            raise
 
-    def _parse_route_info(self, route, transportation_method):
-        leg = route["legs"][0]
-        return RouteInfo(
-            origin=leg["start_address"],
-            destination=leg["end_address"],
-            distance_km=leg["distance"]["value"] / 1000.0,
-            duration=leg["duration_in_traffic"]["text"],
-            duration_value=leg["duration_in_traffic"]["value"],
-            transportation_method=transportation_method,
-            steps=[
-                step["html_instructions"] for step in leg["steps"]
-            ], 
-        )
+        logger.debug(f"Returning route: {route}")
+        return route

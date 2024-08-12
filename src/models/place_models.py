@@ -1,10 +1,9 @@
 from typing import Annotated, Dict, Final, List, Literal, Optional
 
 import pendulum
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError
+from pydantic import BaseModel, Field, HttpUrl, ValidationError
 from pydantic_extra_types.pendulum_dt import DateTime
-
-from config import settings
+from .utils_models import BaseQueryParams
 
 DAYS_OF_WEEK: Final = [pendulum.from_timestamp(0).add(days=i).format("dddd") for i in range(7)]
 
@@ -12,12 +11,6 @@ DAYS_OF_WEEK: Final = [pendulum.from_timestamp(0).add(days=i).format("dddd") for
 class Coordinates(BaseModel):
     latitude: Annotated[float, Field(ge=-90, le=90, description="Latitude in decimal degrees")]
     longitude: Annotated[float, Field(ge=-180, le=180, description="Longitude in decimal degrees")]
-
-
-class BaseQueryParams(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    api_key: str = settings.google_api_key  # type: ignore
 
 
 class NearbySearchQueryParams(BaseQueryParams):

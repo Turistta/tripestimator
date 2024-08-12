@@ -2,7 +2,7 @@ from typing import Annotated, Dict, Final, Literal, Union, get_args
 
 from pydantic import BaseModel, Field, field_validator
 
-from models.utils_models import Currency
+from .utils_models import BaseQueryParams, Currency
 
 TrafficCondition = Literal["light", "moderate", "heavy"]
 
@@ -13,7 +13,7 @@ TRAFFIC_CONDITION_WEIGHT: Final[Dict[str, float]] = {
 }
 
 
-class CostEstimationParams(BaseModel):
+class CostEstimationParams(BaseQueryParams):
     state: Annotated[
         str, Field(..., description="The state for which to estimate the cost.", examples=["GO", "RS", "SP"])
     ]

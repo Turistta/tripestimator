@@ -1,14 +1,16 @@
-from models.cost_models import TRAFFIC_CONDITION_WEIGHT
-from bs4 import BeautifulSoup
 import logging
+
+from bs4 import BeautifulSoup
+
+from models.cost_models import TRAFFIC_CONDITION_WEIGHT
 
 logger = logging.getLogger(__name__)
 
 
 class CostParser:
-    def parse(self, html_text: str) -> float:
+    def parse(self, response: str) -> float:
         try:
-            soup = BeautifulSoup(html_text, "html.parser")
+            soup = BeautifulSoup(response, "html.parser")
             price_element = soup.find(id="telafinal-precofinal")
 
             if not price_element:

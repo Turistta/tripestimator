@@ -1,17 +1,17 @@
 import logging
-from typing import Final
 
 import requests
 from requests.exceptions import HTTPError
 
-BASE_URL: Final = "https://precos.petrobras.com.br/web/precos-dos-combustiveis/w/gasolina/"
+from fetchers.base_fetcher import BaseFetcher
 
 logger = logging.getLogger(__name__)
 
 
-class CostFetcher:
+class CostFetcher(BaseFetcher):
     def fetch(self, state: str) -> str:
-        endpoint = BASE_URL + state
+        endpoint = self.BASE_URL + state
+        self.source_url = endpoint
         logger.info(f"Fetching raw data from URL: {endpoint}")
         try:
             response = requests.get(endpoint)
@@ -21,3 +21,7 @@ class CostFetcher:
         except HTTPError as e:
             logger.error(f"Request error for URL {endpoint}: {e}")
             raise
+
+    @property
+    def BASE_URL(self):
+        return "https://precos.petrobras.com.br/web/precos-dos-combustiveis/w/gasolina/"

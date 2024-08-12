@@ -1,8 +1,14 @@
-from models.cost_models import CostEstimate, CostEstimationParams, CostComponents, Currency
+import logging
+
 from calculators.base_cost_calculator import BaseCostCalculator
 from fetchers.cost_fetcher import CostFetcher
+from models.cost_models import (
+    CostComponents,
+    CostEstimate,
+    CostEstimationParams,
+    Currency,
+)
 from parsers.cost_parsers import CostParser
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +20,7 @@ class CostService:
         self.calculator = calculator
 
     def estimate_cost(self, params: CostEstimationParams) -> CostEstimate:
-        logger.info(
-            f"Estimating cost for state: {params.state}, distance: {params.distance_km} km, "
-            f"time: {params.time_estimated}, traffic: {params.traffic_condition}"
-        )
+        logger.info("Estimating cost")
 
         raw_data = self.fetcher.fetch(params.state)
         fuel_price = self.parser.parse(raw_data)
@@ -33,9 +36,17 @@ class CostService:
         cost_components = CostComponents(
             fuel_price=fuel_price,
             traffic_adjustment=params.traffic_condition,
+            time_cost=self.calculator.TIME_FACTOR,
+            base_cost=self.calculator.BASE_COST,
+            fuel_consumption=self.calculator.FUEL_EFFICIENCY,
         )
 
-        currency = Currency()  # Default currency (Real)
+        currency = Currency()  # Default currency (Real) # type: ignore
         logger.info(f"Estimated cost: {final_cost:.2f}")
 
-        return CostEstimate(estimated_cost=final_cost, currency=currency, cost_details=cost_components)
+        return CostEstimate(
+            estimated_cost=final_cost,
+            currency=currency,
+            cost_details=cost_components,
+            source_urls=self.fetcher.source_url,
+        )

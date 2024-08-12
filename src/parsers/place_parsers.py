@@ -17,15 +17,15 @@ from models.place_models import (
 
 class PlaceParser:
     @staticmethod
-    def parse(response: str, _response_type: str) -> List[PlaceInfo]:
+    def parse(response: str, response_type: str) -> List[PlaceInfo]:
         try:
             json_response = json.loads(response)
-            if _response_type == "textsearch" or _response_type == "nearbysearch":
+            if response_type == "textsearch" or response_type == "nearbysearch":
                 return [PlaceParser._parse_place(place) for place in json_response.get("results", [])]
-            elif _response_type == "findplacefromtext":
+            elif response_type == "findplacefromtext":
                 return [PlaceParser._parse_place(place) for place in json_response.get("candidates", [])]
             else:
-                raise ValueError(f"Unknown response type: {_response_type}")  # Exception treated by builder?
+                raise ValueError(f"Unknown response type: {response_type}")  # Exception treated by builder?
         except JSONDecodeError as e:
             raise e
 
@@ -93,7 +93,11 @@ class PlaceParser:
                 close_time = pendulum.parse(period["close"]["time"], strict=False).format("HH:mm")  # type: ignore
 
                 if close_time < open_time:
-                    close_time = pendulum.parse(period["close"]["time"], strict=False).add(days=1).format("HH:mm")  # type: ignore
+                    close_time = (
+                        pendulum.parse(period["close"]["time"], strict=False)
+                        .add(days=1)  # type: ignore
+                        .format("HH:mm")  # type: ignore
+                    )
 
                 intervals[day_name] = f"{open_time}-{close_time}"
         for day in DAYS_OF_WEEK:

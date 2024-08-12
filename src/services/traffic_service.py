@@ -1,7 +1,9 @@
 import logging
-from travel_pb2 import TrafficResponse, TimeEstimate
-import requests
 import re
+
+import requests
+
+from travel_pb2 import TimeEstimate, TrafficResponse
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -14,9 +16,7 @@ class TrafficService:
         "referer": WAZE_URL,
     }
     VEHICLE_TYPES = ("TAXI", "MOTORCYCLE")
-    COORD_MATCH = re.compile(
-        r"^([-+]?)([\d]{1,2})(((\.)(\d+)(,)))(\s*)(([-+]?)([\d]{1,3})((\.)(\d+))?)$"
-    )
+    COORD_MATCH = re.compile(r"^([-+]?)([\d]{1,2})(((\.)(\d+)(,)))(\s*)(([-+]?)([\d]{1,3})((\.)(\d+))?)$")
     ROUTING_SERVER = "row-RoutingManager/routingRequest"
 
     def __init__(self):
@@ -67,9 +67,7 @@ class TrafficService:
             "returnInstructions": "true",
             "timeout": 6000,
             "nPaths": npaths,
-            "options": ",".join(
-                "%s:%s" % (opt, value) for (opt, value) in self.ROUTE_OPTIONS.items()
-            ),
+            "options": ",".join("%s:%s" % (opt, value) for (opt, value) in self.ROUTE_OPTIONS.items()),
         }
         if self.vehicle_type:
             url_options["vehicleType"] = self.vehicle_type
@@ -109,27 +107,19 @@ class TrafficService:
                 x = segment["path"]["x"]
                 y = segment["path"]["y"]
                 if (
-                    between(
-                        x, start_bounds.get("left", 0), start_bounds.get("right", 0)
-                    )
+                    between(x, start_bounds.get("left", 0), start_bounds.get("right", 0))
                     or between(x, end_bounds.get("left", 0), end_bounds.get("right", 0))
                 ) and (
-                    between(
-                        y, start_bounds.get("bottom", 0), start_bounds.get("top", 0)
-                    )
+                    between(y, start_bounds.get("bottom", 0), start_bounds.get("top", 0))
                     or between(y, end_bounds.get("bottom", 0), end_bounds.get("top", 0))
                 ):
                     continue
 
             if "crossTime" in segment:
-                total_time += segment[
-                    "crossTime" if real_time else "crossTimeWithoutRealTime"
-                ]
+                total_time += segment["crossTime" if real_time else "crossTimeWithoutRealTime"]
                 total_free_flow_time += segment["crossTimeFreeFlow"]
             else:
-                total_time += segment[
-                    "cross_time" if real_time else "cross_time_without_real_time"
-                ]
+                total_time += segment["cross_time" if real_time else "cross_time_without_real_time"]
                 total_free_flow_time += segment["cross_time_free_flow"]
 
             total_length += segment["length"]
