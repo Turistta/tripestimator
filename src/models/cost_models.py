@@ -17,8 +17,10 @@ class CostEstimationParams(BaseQueryParams):
     state: Annotated[
         str, Field(..., description="The state for which to estimate the cost.", examples=["GO", "RS", "SP"])
     ]
-    distance_km: Annotated[float, Field(..., gt=0, description="The distance of the travel in kilometers")]
-    time_estimated: Annotated[int, Field(..., gt=0, description="The estimated time of travel in minutes")]
+    distance: Annotated[float, Field(..., gt=0, description="The distance of the travel in kilometers")]
+    time_estimated: Annotated[
+        int, Field(..., gt=0, description="The estimated time of travel in minutes")
+    ]  # TODO: Seconds?
     traffic_condition: Annotated[
         TrafficCondition, Field(..., description="The traffic condition (light, moderate, heavy)")
     ]

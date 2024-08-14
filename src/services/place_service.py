@@ -19,14 +19,13 @@ class PlaceService:
         query_type = self._get_query_type(query_params_instance)
         logger.debug(f"Query type determined: {query_type}")
 
-        query_params_instance._query_type = query_type  # type: ignore
-
+        query_params_instance.query_type = query_type  # type: ignore
         response_data = self.fetcher.fetch(query_params_instance)
         logger.debug("Response data received.")
-
         places = self.parser.parse(response=response_data, response_type=query_type)
         logger.info(f"Places parsed successfully. Found {len(places)} places.")
-
+        if not len(places):
+            raise Exception("No places found!")
         return places[0]
 
     def _get_query_type(self, query_model: BaseQueryParams) -> str:

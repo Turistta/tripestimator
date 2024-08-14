@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 class RouteFetcher(BaseFetcher):
 
     def fetch(self, params: RouteQueryParams) -> str:
-
         headers = {
             "Content-Type": "application/json",
-            "X-Goog-Api-Key": self.api_key,  # type: ignore
-            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline",
+            "X-Goog-Api-Key": params.api_key,  # type: ignore
+            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs,"
+            + "routes.travelAdvisory",
         }
 
         payload = self._build_payload(params)

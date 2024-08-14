@@ -1,5 +1,6 @@
+from datetime import datetime
+
 from pydantic import BaseModel
-from pydantic_extra_types.pendulum_dt import DateTime
 
 from models.cost_models import CostEstimate
 from models.place_models import PlaceInfo
@@ -9,8 +10,8 @@ from models.route_models import TransportationMode
 class TourItinerary(BaseModel):
     start_point: PlaceInfo
     end_point: PlaceInfo
-    departure_time: DateTime
-    arrival_time: DateTime
+    departure_time: datetime
+    arrival_time: datetime
     cost_estimate: CostEstimate
     transportation_method: TransportationMode
 
