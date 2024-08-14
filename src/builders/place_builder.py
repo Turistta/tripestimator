@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import ValidationError
 
 from fetchers.place_fetcher import PlaceFetcher
@@ -14,7 +12,7 @@ class PlaceBuilder:
         parser = PlaceParser()
         self.place_service = PlaceService(fetcher, parser)
 
-    def build(self, **kwargs) -> List[PlaceInfo]:
+    def build(self, **kwargs) -> PlaceInfo:
         try:
             params = BaseQueryParams(**kwargs)
             return self.place_service.fetch_places(params)

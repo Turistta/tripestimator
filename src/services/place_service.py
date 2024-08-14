@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from fetchers.place_fetcher import PlaceFetcher
 from models.place_models import BaseQueryParams, PlaceInfo, QueryParamsFactory
@@ -13,7 +12,7 @@ class PlaceService:
         self.fetcher = fetcher
         self.parser = parser
 
-    def fetch_places(self, query_params: BaseQueryParams) -> List[PlaceInfo]:
+    def fetch_places(self, query_params: BaseQueryParams) -> PlaceInfo:
 
         factory = QueryParamsFactory(query_params.model_dump())
         query_params_instance = factory.create_query_model()
@@ -28,7 +27,7 @@ class PlaceService:
         places = self.parser.parse(response=response_data, response_type=query_type)
         logger.info(f"Places parsed successfully. Found {len(places)} places.")
 
-        return places
+        return places[0]
 
     def _get_query_type(self, query_model: BaseQueryParams) -> str:
         query_type_mapping = {

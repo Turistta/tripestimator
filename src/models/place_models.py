@@ -15,7 +15,7 @@ class Coordinates(BaseModel):
 
 
 class NearbySearchQueryParams(BaseQueryParams):
-    location: Annotated[    
+    location: Annotated[
         Coordinates,
         Field(
             ...,

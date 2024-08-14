@@ -56,19 +56,21 @@ class CostComponents(BaseModel):
         ),
     ]
 
-    @field_validator("traffic_adjustment", mode="plain")
-    @classmethod
-    def validate_traffic_adjustment(cls, value) -> float:
-        """Maps and normalizes the traffic adjustment value based on its weight. Raises an error for unknown values."""
-        if isinstance(value, str):
-            if value not in get_args(TrafficCondition):
-                raise ValueError(f"Unknown traffic condition '{value}'")
-            return TRAFFIC_CONDITION_WEIGHT[value]
-        elif isinstance(value, (float, int)):
-            return float(value)
-        raise ValueError(
-            "Invalid type for traffic_adjustment. Must be one of: 'light', 'moderate', 'heavy' or a numeric value."
-        )
+    # TODO: Fix JSON schema validation error.
+
+    # @field_validator("traffic_adjustment", mode="plain")
+    # @classmethod
+    # def validate_traffic_adjustment(cls, value) -> float:
+    #     """Maps and normalizes the traffic adjustment value based on its weight. Raises an error for unknown values."""
+    #     if isinstance(value, str):
+    #         if value not in get_args(TrafficCondition):
+    #             raise ValueError(f"Unknown traffic condition '{value}'")
+    #         return TRAFFIC_CONDITION_WEIGHT[value]
+    #     elif isinstance(value, (float, int)):
+    #         return float(value)
+    #     raise ValueError(
+    #         "Invalid type for traffic_adjustment. Must be one of: 'light', 'moderate', 'heavy' or a numeric value."
+    #     )
 
     @field_validator("traffic_adjustment", mode="before")
     @classmethod

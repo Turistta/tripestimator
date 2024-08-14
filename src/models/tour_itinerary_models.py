@@ -3,7 +3,7 @@ from pydantic_extra_types.pendulum_dt import DateTime
 
 from models.cost_models import CostEstimate
 from models.place_models import PlaceInfo
-from models.route_models import Transportation
+from models.route_models import TransportationMode
 
 
 class TourItinerary(BaseModel):
@@ -12,7 +12,7 @@ class TourItinerary(BaseModel):
     departure_time: DateTime
     arrival_time: DateTime
     cost_estimate: CostEstimate
-    transportation_method: Transportation
+    transportation_method: TransportationMode
 
     class Config:
         arbitrary_types_allowed = True

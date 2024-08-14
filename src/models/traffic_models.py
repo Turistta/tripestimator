@@ -1,7 +1,7 @@
 from typing import Optional
 
-from pendulum.datetime import DateTime
 from pydantic import BaseModel
+from pydantic_extra_types.pendulum_dt import DateTime
 
 from .route_models import Transportation
 from .utils_models import BaseQueryParams
