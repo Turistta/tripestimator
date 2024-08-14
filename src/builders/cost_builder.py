@@ -1,8 +1,10 @@
-from services.cost_service import CostService
+from pydantic import ValidationError
+
 from calculators.default_cost_calculator import DefaultCostCalculator
-from parsers.cost_parsers import CostParser
 from fetchers.cost_fetcher import CostFetcher
 from models.cost_models import CostEstimate, CostEstimationParams
+from parsers.cost_parsers import CostParser
+from services.cost_service import CostService
 
 
 class CostBuilder:
@@ -12,5 +14,9 @@ class CostBuilder:
         fetcher = CostFetcher()
         self.cost_service = CostService(calculator, parser, fetcher)
 
-    def build(self, params: CostEstimationParams) -> CostEstimate:
-        return self.cost_service.estimate_cost(params)
+    def build(self, **kwargs) -> CostEstimate:
+        try:
+            params = CostEstimationParams(**kwargs)
+            return self.cost_service.estimate_cost(params)
+        except ValidationError as e:
+            raise ValueError(f"Invalid cost parameters: {str(e)}") from e

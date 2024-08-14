@@ -1,4 +1,4 @@
-from typing import List
+from pydantic import ValidationError
 
 from fetchers.route_fetcher import RouteFetcher
 from models.route_models import Route, RouteQueryParams
@@ -12,6 +12,9 @@ class RouteBuilder:
         parser = RouteParser()
         self.route_service = RouteService(fetcher, parser)
 
-    def build(self, params: RouteQueryParams) -> List[Route]:
-        # TODO: Return actual List, recursive calls.
-        return [self.route_service.get_route(params)]
+    def build(self, **kwargs) -> Route:
+        try:
+            params = RouteQueryParams(**kwargs)
+            return self.route_service.get_route(params)
+        except ValidationError as e:
+            raise ValueError(f"Invalid route parameters: {str(e)}") from e

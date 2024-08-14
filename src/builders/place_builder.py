@@ -1,5 +1,7 @@
 from typing import List
 
+from pydantic import ValidationError
+
 from fetchers.place_fetcher import PlaceFetcher
 from models.place_models import BaseQueryParams, PlaceInfo
 from parsers.place_parsers import PlaceParser
@@ -12,5 +14,9 @@ class PlaceBuilder:
         parser = PlaceParser()
         self.place_service = PlaceService(fetcher, parser)
 
-    def build(self, params: BaseQueryParams) -> List[PlaceInfo]:
-        return self.place_service.fetch_places(params)
+    def build(self, **kwargs) -> List[PlaceInfo]:
+        try:
+            params = BaseQueryParams(**kwargs)
+            return self.place_service.fetch_places(params)
+        except ValidationError as e:
+            raise ValueError(f"Invalid place parameters: {str(e)}") from e
