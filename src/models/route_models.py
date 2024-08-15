@@ -10,12 +10,12 @@ from .place_models import Coordinates
 from .utils_models import BaseQueryParams
 
 
-class TransportationMode(Enum):
-    CAR = 0
-    BIKE = 1
-    BUS = 2
-    TRAIN = 3
-    WALK = 4
+class TransportationMode(str, Enum):
+    CAR = "CAR"
+    BIKE = "BIKE"
+    BUS = "BUS"
+    TRAIN = "TRAIN"
+    WALK = "WALK"
 
 
 class Transportation(BaseModel):

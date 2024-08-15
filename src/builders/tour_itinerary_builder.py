@@ -5,15 +5,9 @@ from builders.cost_builder import CostBuilder
 from builders.place_builder import PlaceBuilder
 from builders.route_builder import RouteBuilder
 from builders.traffic_builder import TrafficBuilder
-from models.place_models import (
-    FindPlaceQueryParams,
-    NearbySearchQueryParams,
-    TextSearchQueryParams,
-)
+from models.place_models import PlaceQuery
 from models.route_models import TransportationMode
 from models.tour_itinerary_models import TourItinerary
-
-PlaceQuery = Union[NearbySearchQueryParams, FindPlaceQueryParams, TextSearchQueryParams]
 
 
 class TourItineraryBuilder:

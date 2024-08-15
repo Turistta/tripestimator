@@ -12,7 +12,7 @@ class PlaceService:
         self.fetcher = fetcher
         self.parser = parser
 
-    def fetch_places(self, query_params: BaseQueryParams) -> PlaceInfo:
+    async def fetch_places(self, query_params: BaseQueryParams) -> PlaceInfo:
 
         factory = QueryParamsFactory(query_params.model_dump())
         query_params_instance = factory.create_query_model()

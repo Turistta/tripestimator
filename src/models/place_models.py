@@ -1,4 +1,4 @@
-from typing import Annotated, Dict, Final, List, Literal, Optional
+from typing import Annotated, Dict, Final, List, Literal, Optional, Union
 
 import pendulum
 from pydantic import BaseModel, Field, HttpUrl, ValidationError
@@ -261,3 +261,6 @@ class PlaceInfo(BaseModel):
             description="Opening hours of the place, with day names as keys (e.g., 'Monday': '09:00-17:00').",
         ),
     ]
+
+
+PlaceQuery = Union[NearbySearchQueryParams, FindPlaceQueryParams, TextSearchQueryParams]
