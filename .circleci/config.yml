@@ -27,7 +27,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:./src
       - run:
           name: Start server
-          command: python ./src/server.py
+          command: python server.py
 
   test:
     executor: python-executor
