@@ -20,19 +20,10 @@ jobs:
   run-server:
     executor: python-executor
     steps:
-      - checkout
-      - run:
-          name: Set PYTHONPATH
-          command: |
-            export PYTHONPATH=$PWD/src
-      - run:
-          name: Create .venv
-          command: |
-            python -m venv .venv && source ./.venv/bin/activate
-      
+      - checkout    
       - run:
           name: Start server
-          command: pip list && python src/server.py
+          command: python src/server.py
 
   test:
     executor: python-executor
