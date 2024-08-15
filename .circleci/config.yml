@@ -7,7 +7,7 @@ executors:
     working_directory: ~/repo
 
 jobs:
-  install-dependencies:
+  run-server:
     executor: python-executor
     steps:
       - checkout
@@ -16,11 +16,10 @@ jobs:
           command: |
             python -m pip install --upgrade pip
             pip install -r requirements.txt
-
-  run-server:
-    executor: python-executor
-    steps:
-      - checkout    
+      - run:
+          name: Set PYTHONPATH
+          command: |
+            export PYTHONPATH=$PWD/src      
       - run:
           name: Start server
           command: python src/server.py
