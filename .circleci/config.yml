@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Set PYTHONPATH
           command: |
-            export PYTHONPATH=$PYTHONPATH:./src
+            export PYTHONPATH=$PYTHONPATH:./src && echo $PYTHONPATH
       - run:
           name: Start server
           command: python src/server.py
