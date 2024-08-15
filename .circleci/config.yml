@@ -15,7 +15,7 @@ jobs:
           name: Install Python dependencies
           command: |
             python -m pip install --upgrade pip
-            pip install -r requirements.txt
+            pip install -r requirements.txt --cached
 
   run-server:
     executor: python-executor
@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Set PYTHONPATH
           command: |
-            export PYTHONPATH=$PYTHONPATH:./src && echo $PYTHONPATH
+            export PYTHONPATH=$PYTHONPATH:$PWD/src
       - run:
           name: Start server
           command: python src/server.py
@@ -33,10 +33,6 @@ jobs:
     executor: python-executor
     steps:
       - checkout
-      - run:
-          name: Set PYTHONPATH
-          command: |
-            export PYTHONPATH=$PYTHONPATH:./src
       - run:
           name: Run tests
           command: pytest
