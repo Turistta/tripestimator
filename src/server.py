@@ -27,4 +27,4 @@ async def build_tour(
 
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=settings.server_port, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=settings.server_port, reload=True)  # type: ignore

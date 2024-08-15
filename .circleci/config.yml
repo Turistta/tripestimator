@@ -25,8 +25,7 @@ jobs:
           command: |
             echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" > .env &&
             echo "SERVER_PORT=3000" >> .env &&
-            cat .env &&
-            env 
+            mv .env src
       - run:
           name: Start server
           command: python src/server.py
