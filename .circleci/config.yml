@@ -28,11 +28,11 @@ jobs:
       - run:
           name: Create .venv
           command: |
-            python -m venv .venv
+            python -m venv .venv && source ./.venv/bin/activate
       
       - run:
           name: Start server
-          command: source ./.venv/bin/activate && python src/server.py
+          command: which python && python src/server.py
 
   test:
     executor: python-executor
