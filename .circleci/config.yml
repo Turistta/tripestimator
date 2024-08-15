@@ -32,7 +32,7 @@ jobs:
       
       - run:
           name: Start server
-          command: which python && python src/server.py
+          command: pip list && python src/server.py
 
   test:
     executor: python-executor
