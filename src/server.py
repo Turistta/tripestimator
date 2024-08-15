@@ -1,6 +1,6 @@
 from typing import Annotated
 
-# import uvicorn
+import uvicorn
 from fastapi import Body, FastAPI, HTTPException
 
 from builders.tour_itinerary_builder import TourItineraryBuilder
