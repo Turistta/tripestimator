@@ -21,7 +21,10 @@ jobs:
           command: |
             export PYTHONPATH=$PWD/src
       - run:
-      
+          name: Export API-KEY
+          command: |
+            echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" > .env
+            echo "SERVER_PORT=3000" >> .env
       - run:
           name: Start server
           command: python src/server.py

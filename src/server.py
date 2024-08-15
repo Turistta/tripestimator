@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import Body, FastAPI, HTTPException
 
 from builders.tour_itinerary_builder import TourItineraryBuilder
+from config import settings
 from models.tour_itinerary_models import TourItinerary, TourRequest
 
 app = FastAPI(title="TripEstimatorAPI")
@@ -26,4 +27,4 @@ async def build_tour(
 
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=3000, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=settings.server_port, reload=True)
