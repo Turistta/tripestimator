@@ -1,0 +1,54 @@
+version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: cimg/python:3.11
+    working_directory: ~/repo
+
+jobs:
+  install-dependencies:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Install Python dependencies
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+  run-server:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Set PYTHONPATH
+          command: |
+            export PYTHONPATH=$PYTHONPATH:./src
+      - run:
+          name: Start server
+          command: python src/server/server.py
+
+  test:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Set PYTHONPATH
+          command: |
+            export PYTHONPATH=$PYTHONPATH:./src
+      - run:
+          name: Run tests
+          command: pytest src/tests
+
+workflows:
+  version: 2
+  build_and_test_and_run:
+    jobs:
+      - install-dependencies
+      - run-server:
+          requires:
+            - install-dependencies
+      - test:
+          requires:
+            - run-server
