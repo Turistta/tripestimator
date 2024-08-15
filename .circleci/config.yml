@@ -26,13 +26,13 @@ jobs:
           command: |
             export PYTHONPATH=$PWD/src
       - run:
-          name: Create and activate .venv
+          name: Create .venv
           command: |
-            python -m venv .venv && source ./.venv/bin/activate
+            python -m venv .venv
       
       - run:
           name: Start server
-          command: python src/server.py
+          command: source ./.venv/bin/activate && python src/server.py
 
   test:
     executor: python-executor
