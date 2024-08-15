@@ -27,7 +27,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:./src
       - run:
           name: Start server
-          command: python src/server/server.py
+          command: python ./src/server.py
 
   test:
     executor: python-executor
@@ -39,7 +39,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:./src
       - run:
           name: Run tests
-          command: pytest src/tests
+          command: pytest
 
 workflows:
   version: 2
