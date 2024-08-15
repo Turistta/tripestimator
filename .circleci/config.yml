@@ -27,7 +27,7 @@ jobs:
             export PYTHONPATH=$PWD/src
       - run:
           name: Create and activate .venv
-          command: /
+          command: |
             python -m venv .venv && source ./.venv/bin/activate
       
       - run:
