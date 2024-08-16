@@ -19,10 +19,10 @@ class CostService:
         self.parser = parser
         self.calculator = calculator
 
-    def estimate_cost(self, params: CostEstimationParams) -> CostEstimate:
+    async def estimate_cost(self, params: CostEstimationParams) -> CostEstimate:
         logger.info("Estimating cost")
 
-        raw_data = self.fetcher.fetch(params.state)
+        raw_data = await self.fetcher.fetch(params.state)
         fuel_price = self.parser.parse(raw_data)
         traffic_weight = self.parser.parse_traffic_condition(params.traffic_condition)
         final_cost = self.calculator.estimate_cost(
@@ -34,7 +34,7 @@ class CostService:
         cost_components = CostComponents(
             fuel_price=fuel_price,
             traffic_adjustment=1.0,
-            # traffic_adjustment=params.traffic_condition, # Fix traffic_adjustment parser.
+            # TODO: traffic_adjustment=params.traffic_condition, # Fix traffic_adjustment parser.
             time_cost=self.calculator.TIME_FACTOR,
             base_cost=self.calculator.BASE_COST,
             fuel_consumption=self.calculator.FUEL_EFFICIENCY,

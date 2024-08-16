@@ -1,8 +1,7 @@
 import logging
 from typing import Any, Dict
 
-import requests
-from requests.exceptions import HTTPError
+import aiohttp
 
 from fetchers.base_fetcher import BaseFetcher
 from models.route_models import RouteQueryParams, TransportationMode
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class RouteFetcher(BaseFetcher):
 
-    def fetch(self, params: RouteQueryParams) -> str:
+    async def fetch(self, params: RouteQueryParams) -> str:
         headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": params.api_key,  # type: ignore
@@ -21,17 +20,20 @@ class RouteFetcher(BaseFetcher):
         }
 
         payload = self._build_payload(params)
+        self.source_url = self.BASE_URL
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(url=self.BASE_URL, json=payload, headers=headers) as response:
+                    if response.status == 200:
+                        logger.info("Successfully fetched raw data.")
+                        return await response.text()
+                    logger.error(f"{__name__} raised for status: {response.status}")
+                    raise
+            except aiohttp.ClientConnectionError as e:
+                logger.error(f"Request error for URL {self.BASE_URL}: {e}")
+                raise e
 
-        try:
-            response = requests.post(self.BASE_URL, json=payload, headers=headers)
-            response.raise_for_status()
-            logger.info("Successfully fetched route data.")
-            return response.text
-        except HTTPError as e:
-            logger.error(f"Request error for URL {self.BASE_URL}: {e}")
-            raise
-
-    def _build_payload(self, params: RouteQueryParams) -> Dict[str, Any]:
+    def _build_payload(self, params: RouteQueryParams) -> dict[str, Any]:
         payload = {
             "origin": {"placeId": params.origin},
             "destination": {"placeId": params.destination},

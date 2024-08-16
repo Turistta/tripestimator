@@ -12,9 +12,9 @@ class RouteBuilder:
         parser = RouteParser()
         self.route_service = RouteService(fetcher, parser)
 
-    def build(self, **kwargs) -> Route:
+    async def build(self, **kwargs) -> Route:
         try:
             params = RouteQueryParams(**kwargs)
-            return self.route_service.get_route(params)
+            return await self.route_service.get_route(params)
         except ValidationError as e:
             raise ValueError(f"Invalid route parameters: {str(e)}") from e

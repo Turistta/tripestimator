@@ -4,13 +4,13 @@ import pendulum
 import pytest
 from pydantic import ValidationError
 
-from models.place_models import Coordinates
 from models.route_models import (
     Route,
     RouteQueryParams,
     Transportation,
     TransportationMode,
 )
+from models.utils_models import Coordinates
 
 
 class TestTransportation:

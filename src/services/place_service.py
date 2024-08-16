@@ -12,7 +12,7 @@ class PlaceService:
         self.fetcher = fetcher
         self.parser = parser
 
-    def fetch_places(self, query_params: BaseQueryParams) -> PlaceInfo:
+    async def fetch_places(self, query_params: BaseQueryParams) -> PlaceInfo:
 
         factory = QueryParamsFactory(query_params.model_dump())
         query_params_instance = factory.create_query_model()
@@ -20,7 +20,8 @@ class PlaceService:
         logger.debug(f"Query type determined: {query_type}")
 
         query_params_instance.query_type = query_type  # type: ignore
-        response_data = self.fetcher.fetch(query_params_instance)
+        
+        response_data = await self.fetcher.fetch(query_params_instance)
         logger.debug("Response data received.")
         places = self.parser.parse(response=response_data, response_type=query_type)
         logger.info(f"Places parsed successfully. Found {len(places)} places.")

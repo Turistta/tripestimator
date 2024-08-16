@@ -5,19 +5,13 @@ from typing import Any, Dict, List
 import pendulum
 from pydantic_core import Url
 
-from models.place_models import (
-    DAYS_OF_WEEK,
-    Coordinates,
-    Location,
-    Picture,
-    PlaceInfo,
-    Review,
-)
+from models.place_models import DAYS_OF_WEEK, Location, Picture, PlaceInfo, Review
+from models.utils_models import Coordinates
 
 
 class PlaceParser:
     @staticmethod
-    def parse(response: str, response_type: str) -> List[PlaceInfo]:
+    def parse(response: str, response_type: str) -> list[PlaceInfo]:
         try:
             json_response = json.loads(response)
             if response_type == "textsearch" or response_type == "nearbysearch":
@@ -30,7 +24,7 @@ class PlaceParser:
             raise e
 
     @staticmethod
-    def _parse_place(place: Dict[str, Any]) -> PlaceInfo:
+    def _parse_place(place: dict[str, Any]) -> PlaceInfo:
         return PlaceInfo(
             place_id=place.get("place_id", ""),
             name=place.get("name", ""),
@@ -43,7 +37,7 @@ class PlaceParser:
         )
 
     @staticmethod
-    def _parse_location(place: Dict[str, Any]) -> Location:
+    def _parse_location(place: dict[str, Any]) -> Location:
         geometry = place.get("geometry", {})
         location = geometry.get("location", {})
         return Location(
@@ -53,7 +47,7 @@ class PlaceParser:
         )
 
     @staticmethod
-    def _parse_reviews(reviews: List[Dict[str, Any]]) -> List[Review]:
+    def _parse_reviews(reviews: list[dict[str, Any]]) -> list[Review]:
         return [
             Review(
                 author_name=review.get("author_name", ""),
@@ -67,7 +61,7 @@ class PlaceParser:
         ]
 
     @staticmethod
-    def _parse_pictures(photos: List[Dict[str, Any]]) -> List[Picture]:
+    def _parse_pictures(photos: list[dict[str, Any]]) -> list[Picture]:
         return [
             Picture(
                 url=Url(
@@ -81,7 +75,7 @@ class PlaceParser:
         ]
 
     @staticmethod
-    def _parse_opening_hours(opening_hours: Dict[str, Any]) -> Dict[str, str]:
+    def _parse_opening_hours(opening_hours: dict[str, Any]) -> dict[str, str]:
         intervals = {}
 
         if opening_hours and "periods" in opening_hours:

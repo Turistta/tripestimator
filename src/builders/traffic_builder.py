@@ -12,9 +12,9 @@ class TrafficBuilder:
         parser = TrafficParser()
         self.traffic_service = TrafficService(parser, fetcher)
 
-    def build(self, **kwargs) -> TrafficCondition:
+    async def build(self, **kwargs) -> TrafficCondition:
         try:
             params = TrafficQueryParams(**kwargs)
-            return self.traffic_service.get_traffic_condition(params)
+            return await self.traffic_service.get_traffic_condition(params)
         except ValidationError as e:
             raise ValueError(f"Invalid traffic parameters: {str(e)}") from e

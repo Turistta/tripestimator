@@ -2,8 +2,8 @@ from json import JSONDecodeError
 
 import pytest
 
-from models.place_models import Coordinates
 from models.route_models import Route, Transportation, TransportationMode
+from models.utils_models import Coordinates
 from parsers.route_parsers import RouteParser
 
 

@@ -3,8 +3,8 @@ import logging
 
 from pydantic import ValidationError
 
-from models.place_models import Coordinates
 from models.route_models import Route, Transportation, TransportationMode
+from models.utils_models import Coordinates
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +13,8 @@ class RouteParser:
     @staticmethod
     def parse(response: str, transportation_mode: TransportationMode) -> Route:
         try:
-            response_data = json.loads(response)
-            route = response_data.get("routes", [{}])[0]
+            response_json = json.loads(response)
+            route = response_json.get("routes", [{}])[0]
             route_leg = route.get("legs", [{}])[0]
 
             origin_data = route_leg.get("startLocation", {}).get("latLng")

@@ -1,4 +1,4 @@
-from typing import Annotated, Dict, Final, Literal, Union, get_args
+from typing import Annotated, Final, Literal, Union, get_args
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -6,7 +6,7 @@ from .utils_models import BaseQueryParams, Currency
 
 TrafficCondition = Literal["light", "moderate", "heavy"]
 
-TRAFFIC_CONDITION_WEIGHT: Final[Dict[str, float]] = {
+TRAFFIC_CONDITION_WEIGHT: Final[dict[str, float]] = {
     "light": 1.0,
     "moderate": 1.2,
     "heavy": 1.5,

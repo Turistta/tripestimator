@@ -9,7 +9,7 @@ class BaseFetcher(ABC, Generic[T]):
         self._source_url: str = ""
 
     @abstractmethod
-    def fetch(self, *args: Any, **kwargs: Any) -> str:
+    async def fetch(self, *args: Any, **kwargs: Any) -> str:
         pass
 
     @property

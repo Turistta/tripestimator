@@ -14,9 +14,9 @@ class CostBuilder:
         fetcher = CostFetcher()
         self.cost_service = CostService(calculator, parser, fetcher)
 
-    def build(self, **kwargs) -> CostEstimate:
+    async def build(self, **kwargs) -> CostEstimate:
         try:
             params = CostEstimationParams(**kwargs)
-            return self.cost_service.estimate_cost(params)
+            return await self.cost_service.estimate_cost(params)
         except ValidationError as e:
             raise ValueError(f"Invalid cost parameters: {str(e)}") from e

@@ -12,11 +12,11 @@ class RouteService:
         self.fetcher = fetcher
         self.parser = parser
 
-    def get_route(self, query_params: RouteQueryParams) -> Route:
+    async def get_route(self, query_params: RouteQueryParams) -> Route:
         logger.info(f"Fetching route with query params: {query_params}")
 
         try:
-            raw_data = self.fetcher.fetch(query_params)
+            raw_data = await self.fetcher.fetch(query_params)
             logger.debug("Raw data fetched")
         except Exception as e:
             logger.error(f"Error fetching route data: {e}")

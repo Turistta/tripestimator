@@ -1,10 +1,8 @@
 from typing import Annotated
 
-import uvicorn
 from fastapi import Body, FastAPI, HTTPException
 
 from builders.tour_itinerary_builder import TourItineraryBuilder
-from config import settings
 from models.tour_itinerary_models import TourItinerary, TourRequest
 
 app = FastAPI(title="TripEstimatorAPI")
@@ -18,15 +16,9 @@ async def build_tour(
     tour_request: Annotated[TourRequest, Body(openapi_examples=TourRequest.Config.schema_extra["examples"])],  # type: ignore
 ):
     try:
-        tour_itinerary = tour_builder.build(
+        tour_itinerary = await tour_builder.build(
             tour_request.place_a, tour_request.place_b, tour_request.transportation_method
         )
         return tour_itinerary
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=int(settings.server_port), reload=True)  # type: ignore
-
-print()

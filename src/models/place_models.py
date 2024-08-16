@@ -1,17 +1,12 @@
-from typing import Annotated, Dict, Final, List, Literal, Optional, Union
+from typing import Annotated, Final, Literal, Optional, Union
 
 import pendulum
 from pydantic import BaseModel, Field, HttpUrl, ValidationError
 from pydantic_extra_types.pendulum_dt import DateTime
 
-from .utils_models import BaseQueryParams
+from .utils_models import BaseQueryParams, Coordinates
 
 DAYS_OF_WEEK: Final = [pendulum.from_timestamp(0).add(days=i).format("dddd") for i in range(7)]
-
-
-class Coordinates(BaseModel):
-    latitude: Annotated[float, Field(ge=-90, le=90, description="Latitude in decimal degrees")]
-    longitude: Annotated[float, Field(ge=-180, le=180, description="Longitude in decimal degrees")]
 
 
 class NearbySearchQueryParams(BaseQueryParams):
@@ -142,7 +137,7 @@ class TextSearchQueryParams(BaseQueryParams):
     maxprice: Annotated[
         int,
         Field(
-            None,
+            3,
             ge=0,
             le=4,
             description="Restricts results to only those places within the specified maximum price range. Values range"
@@ -154,7 +149,7 @@ class TextSearchQueryParams(BaseQueryParams):
     minprice: Annotated[
         Optional[int],
         Field(
-            None,
+            3,
             ge=0,
             le=4,
             description="Restricts results to only those places within the specified minimum price range. Values range"
@@ -191,7 +186,7 @@ class TextSearchQueryParams(BaseQueryParams):
 
 
 class QueryParamsFactory:
-    def __init__(self, query_params: Dict[str, str]):
+    def __init__(self, query_params: dict[str, str]):
         self.params = query_params
         self.query_params_class = self._determine_query_params_class()
 
@@ -250,12 +245,12 @@ class PlaceInfo(BaseModel):
     place_id: Annotated[str, Field(description="Unique identifier for the place.")]
     name: Annotated[str, Field(default="", description="Name of the place.")]
     location: Annotated[Location, Field(description="Location details of the place.")]
-    types: Annotated[List[str], Field(default=[], description="Types or categories of the place.")]
-    reviews: Annotated[List[Review], Field(default=[], description="List of reviews for the place.")]
-    pictures: Annotated[List[Picture], Field(default=[], description="List of pictures for the place.")]
+    types: Annotated[list[str], Field(default=[], description="Types or categories of the place.")]
+    reviews: Annotated[list[Review], Field(default=[], description="List of reviews for the place.")]
+    pictures: Annotated[list[Picture], Field(default=[], description="List of pictures for the place.")]
     ratings_total: Annotated[int, Field(description="Total number of ratings.", ge=0)]
     opening_hours: Annotated[
-        Dict[str, str],
+        dict[str, str],
         Field(
             default_factory=lambda: {day: "Closed" for day in DAYS_OF_WEEK},
             description="Opening hours of the place, with day names as keys (e.g., 'Monday': '09:00-17:00').",

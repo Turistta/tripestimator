@@ -1,5 +1,5 @@
+import asyncio
 from datetime import datetime, timedelta
-from typing import Union
 
 from builders.cost_builder import CostBuilder
 from builders.place_builder import PlaceBuilder
@@ -8,6 +8,7 @@ from builders.traffic_builder import TrafficBuilder
 from models.place_models import PlaceQuery
 from models.route_models import TransportationMode
 from models.tour_itinerary_models import TourItinerary
+from models.traffic_models import TrafficCondition
 
 
 class TourItineraryBuilder:
@@ -17,29 +18,29 @@ class TourItineraryBuilder:
         self.traffic_builder = TrafficBuilder()
         self.cost_builder = CostBuilder()
 
-    def build(
+    async def build(
         self, place_a: PlaceQuery, place_b: PlaceQuery, transportation_method: TransportationMode
     ) -> TourItinerary:
-        start_point = self.place_builder.build(**place_a.model_dump())
-        end_point = self.place_builder.build(**place_b.model_dump())
+        start_point, end_point = await asyncio.gather(
+            self.place_builder.build(**place_a.model_dump()), self.place_builder.build(**place_b.model_dump())
+        )
 
-        route = self.route_builder.build(  # Get route info between places
+        route = await self.route_builder.build(
             origin=start_point.place_id,
             destination=end_point.place_id,
             mode=transportation_method,
         )
-
-        traffic_condition = self.traffic_builder.build(  # Get traffic conditions
+        traffic_condition = await self.traffic_builder.build(
             polyline=route.polyline, transportation_method=transportation_method
         )
-        cost_estimate = self.cost_builder.build(  # Get the cost estimation
+        cost_estimate = await self.cost_builder.build(
             distance=route.distance,
-            state="GO",  # TODO: Route model Helper func to get state for CostEstimation?
-            time_estimated=int(route.duration),  # TODO: Use helper, no explicit casting.
-            traffic_condition="light",  # TODO: Adapt traffic_condition.
+            state=self._get_state_from_route(route),
+            time_estimated=int(route.duration),  # TODO: Fix explicit conversion
+            traffic_condition=self._calculate_traffic_impact(traffic_condition),
         )
 
-        return TourItinerary(  # Creates the "itinerary".
+        return TourItinerary(
             start_point=start_point,
             end_point=end_point,
             departure_time=datetime.now(),
@@ -47,3 +48,11 @@ class TourItineraryBuilder:
             cost_estimate=cost_estimate,
             transportation_method=transportation_method,
         )
+
+    def _get_state_from_route(self, route) -> str:
+        # TODO: Implement actual logic to determine the state from the route.
+        return "GO"
+
+    def _calculate_traffic_impact(self, traffic_condition: TrafficCondition) -> str:
+        # TODO: Implement actual traffic condition calculator.
+        return "moderate"

@@ -5,9 +5,9 @@ from parsers.traffic_parser import TrafficParser
 
 class TrafficService:
     def __init__(self, parser: TrafficParser, fetcher: TrafficFetcher) -> None:
-        self.parser = TrafficParser()
-        self.fetcher = TrafficFetcher()
+        self.parser = parser
+        self.fetcher = fetcher
 
-    def get_traffic_condition(self, params: TrafficQueryParams) -> TrafficCondition:
-        raw_data = self.fetcher.fetch(params)
+    async def get_traffic_condition(self, params: TrafficQueryParams) -> TrafficCondition:
+        raw_data = await self.fetcher.fetch(params=params)
         return self.parser.parse(raw_data)

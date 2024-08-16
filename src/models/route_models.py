@@ -6,8 +6,7 @@ import pendulum
 from pydantic import BaseModel, Field, ValidationInfo, field_serializer, field_validator
 from pydantic_extra_types.pendulum_dt import DateTime
 
-from .place_models import Coordinates
-from .utils_models import BaseQueryParams
+from .utils_models import BaseQueryParams, Coordinates
 
 
 class TransportationMode(str, Enum):

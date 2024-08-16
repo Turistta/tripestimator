@@ -12,9 +12,9 @@ class PlaceBuilder:
         parser = PlaceParser()
         self.place_service = PlaceService(fetcher, parser)
 
-    def build(self, **kwargs) -> PlaceInfo:
+    async def build(self, **kwargs) -> PlaceInfo:
         try:
             params = BaseQueryParams(**kwargs)
-            return self.place_service.fetch_places(params)
+            return await self.place_service.fetch_places(params)
         except ValidationError as e:
             raise ValueError(f"Invalid place parameters: {str(e)}") from e

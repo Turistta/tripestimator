@@ -1,8 +1,8 @@
 import logging
+import urllib
+import urllib.parse
 
-import requests
-from requests.exceptions import HTTPError
-from requests.models import PreparedRequest
+import aiohttp
 
 from fetchers.base_fetcher import BaseFetcher
 from models.utils_models import BaseQueryParams
@@ -11,24 +11,27 @@ logger = logging.getLogger(__name__)
 
 
 class PlaceFetcher(BaseFetcher):
-    def fetch(self, params: BaseQueryParams) -> str:
-        params_dict = params.model_dump()
+    async def fetch(self, params: BaseQueryParams) -> str:
+        params_dict = params.model_dump(exclude_none=True)
         query_type = params_dict.pop("query_type")
         endpoint = self.BASE_URL.format(query_type=query_type)
-        self.source_url = endpoint
-        req = PreparedRequest()
         params_dict["key"] = params_dict.pop("api_key")
-        params_dict["input"] = params_dict.pop("text_input")
-        req.prepare_url(endpoint, params_dict)
-        try:
-            response = requests.get(url=req.url)  # type: ignore
-            response.raise_for_status()
-            logger.info("Successfully fetched raw data.")
-            self.source_url = req.url  # type: ignore
-            return response.text
-        except HTTPError as e:
-            logger.error(f"Request error for URL {req.url}: {e}")
-            raise
+        if params_dict.get("input"):
+            params_dict["input"] = params_dict.pop("text_input")
+        encoded_params = urllib.parse.urlencode(params_dict)
+        url = f"{endpoint}&{encoded_params}"
+        self.source_url = url
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url=url) as response:
+                    if response.status == 200:
+                        logger.info("Successfully fetched raw data.")
+                        return await response.text()
+                    logger.error(f"{__name__} raised for status: {response.status}")
+                    raise
+            except aiohttp.ClientConnectionError as e:
+                logger.error(f"Request error for URL {endpoint}: {e}")
+                raise e
 
     # TODO: Fix 'reviews' keyword.
 
