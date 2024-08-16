@@ -20,7 +20,7 @@ class PlaceService:
         logger.debug(f"Query type determined: {query_type}")
 
         query_params_instance.query_type = query_type  # type: ignore
-        
+
         response_data = await self.fetcher.fetch(query_params_instance)
         logger.debug("Response data received.")
         places = self.parser.parse(response=response_data, response_type=query_type)

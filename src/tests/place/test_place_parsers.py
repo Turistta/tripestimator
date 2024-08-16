@@ -3,8 +3,6 @@ import pytest
 from models.place_models import Location, Picture, PlaceInfo, Review
 from parsers.place_parsers import PlaceParser
 
-# TODO: Add more test cases.
-
 
 class TestPlaceParser:
 

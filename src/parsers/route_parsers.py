@@ -43,7 +43,10 @@ class RouteParser:
             transportation = {
                 "mode": transportation_mode,
                 "fare": fare,
-                "provider": None,  # TODO: do something.
+                "provider": None,
+                # TODO: Implement actual provider usage.
+                #   assignees: MarceloJordao01, IgorG-Monteiro
+                #   labels: enhancement, help wanted
                 "details": details,
             }
 

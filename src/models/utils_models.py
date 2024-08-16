@@ -16,7 +16,11 @@ class BaseQueryParams(BaseModel):
     api_key: str = settings.google_api_key  # type: ignore
 
 
-class Currency(BaseModel):  # TODO: Test post_init generated fields.
+class Currency(BaseModel):
+    # TODO: Test post_init generated fields.
+    #   Implement tests for this model fields as per default. Abnormal results from the API request.
+    #   assignees: MarceloJordao01
+    #   labels: enhancement, bug
     """Currency handler and parser"""
 
     model_config = ConfigDict(extra="forbid", strict=True)  # Enforce strict mode

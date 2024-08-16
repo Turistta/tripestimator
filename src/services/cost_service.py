@@ -34,7 +34,9 @@ class CostService:
         cost_components = CostComponents(
             fuel_price=fuel_price,
             traffic_adjustment=1.0,
-            # TODO: traffic_adjustment=params.traffic_condition, # Fix traffic_adjustment parser.
+            # TODO: # Fix traffic_adjustment parser.
+            #   assignees: IgorG-Monteiro
+            #   labels: enhancement, help wanted
             time_cost=self.calculator.TIME_FACTOR,
             base_cost=self.calculator.BASE_COST,
             fuel_consumption=self.calculator.FUEL_EFFICIENCY,
