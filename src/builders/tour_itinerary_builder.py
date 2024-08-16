@@ -56,6 +56,4 @@ class TourItineraryBuilder:
 
     def _calculate_traffic_impact(self, traffic_condition: TrafficCondition) -> str:
         # TODO: #5 Implement actual traffic condition calculator.
-        #   assignees: MarceloJordao01, IgorG-Monteiro
-        #   labels: enhancement, help wanted
         return "moderate"

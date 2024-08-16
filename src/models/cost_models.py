@@ -58,6 +58,7 @@ class CostComponents(BaseModel):
     ]
 
     # TODO: #9 Fix JSON schema validation error.
+
     #   The schema from this should be either accept as valid by pydantic or ignored.
     #   assignees: MarceloJordao01
     #   labels: bug
