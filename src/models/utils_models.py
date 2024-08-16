@@ -17,10 +17,7 @@ class BaseQueryParams(BaseModel):
 
 
 class Currency(BaseModel):
-    # TODO: Test post_init generated fields.
-    #   Implement tests for this model fields as per default. Abnormal results from the API request.
-    #   assignees: MarceloJordao01
-    #   labels: enhancement, bug
+    # TODO: #11 Test post_init generated fields.
     """Currency handler and parser"""
 
     model_config = ConfigDict(extra="forbid", strict=True)  # Enforce strict mode

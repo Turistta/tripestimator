@@ -44,9 +44,7 @@ class RouteParser:
                 "mode": transportation_mode,
                 "fare": fare,
                 "provider": None,
-                # TODO: Implement actual provider usage.
-                #   assignees: MarceloJordao01, IgorG-Monteiro
-                #   labels: enhancement, help wanted
+                # TODO: #12 Implement actual provider usage.
                 "details": details,
             }
 

@@ -19,10 +19,7 @@ class CostEstimationParams(BaseQueryParams):
     ]
     distance: Annotated[float, Field(..., gt=0, description="The distance of the travel in kilometers")]
     time_estimated: Annotated[int, Field(..., gt=0, description="The estimated time of travel in minutes")]
-    # TODO: Validate time assignment compatiblity across the app (seconds/minutes).
-    #   Check for time incompabilities with conversion across the app.
-    #   assignees: MarceloJordao01
-    #   labels: enhancement, help wanted
+    # TODO: #8 Validate time assignment compatiblity across the app (seconds/minutes).
     traffic_condition: Annotated[
         TrafficCondition, Field(..., description="The traffic condition (light, moderate, heavy)")
     ]
@@ -60,7 +57,7 @@ class CostComponents(BaseModel):
         ),
     ]
 
-    # TODO: Fix JSON schema validation error.
+    # TODO: #9 Fix JSON schema validation error.
     #   The schema from this should be either accept as valid by pydantic or ignored.
     #   assignees: MarceloJordao01
     #   labels: bug

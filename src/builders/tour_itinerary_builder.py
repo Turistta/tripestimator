@@ -37,10 +37,7 @@ class TourItineraryBuilder:
             distance=route.distance,
             state=self._get_state_from_route(route),
             time_estimated=int(route.duration),
-            # TODO: Fix explicit conversion
-            #   The type conversion should be handled elsewhere.
-            #   assignees: MarceloJordao01
-            #   labels: enhancement, bug
+            # TODO: #3 Fix explicit conversion
             traffic_condition=self._calculate_traffic_impact(traffic_condition),
         )
 
@@ -54,13 +51,11 @@ class TourItineraryBuilder:
         )
 
     def _get_state_from_route(self, route) -> str:
-        # TODO: Implement actual logic to determine the state from the route.
-        #   assignees: MarceloJordao01, IgorG-Monteiro
-        #   labels: enhancement, help wanted
+        # TODO: #4 Implement actual logic to determine the state from the route.
         return "GO"
 
     def _calculate_traffic_impact(self, traffic_condition: TrafficCondition) -> str:
-        # TODO: Implement actual traffic condition calculator.
+        # TODO: #5 Implement actual traffic condition calculator.
         #   assignees: MarceloJordao01, IgorG-Monteiro
         #   labels: enhancement, help wanted
         return "moderate"
