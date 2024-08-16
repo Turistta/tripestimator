@@ -17,10 +17,7 @@ class PlaceFetcher(BaseFetcher):
         endpoint = self.BASE_URL.format(query_type=query_type)
         params_dict["key"] = params_dict.pop("api_key")
         params_dict["input"] = params_dict.pop("text_input")
-        # TODO: fix other type of place queries
-        #   When the type of the query is not textinput, this param should not exist.
-        #   assignees: MarceloJordao01
-        #   labels: bug
+        # TODO: #6 fix other type of place queries
         encoded_params = urllib.parse.urlencode(params_dict)
         url = f"{endpoint}&{encoded_params}"
         self.source_url = url
@@ -42,7 +39,4 @@ class PlaceFetcher(BaseFetcher):
             "https://maps.googleapis.com/maps/api/place/{query_type}/json?fields=formatted_address,name,geometry"
             + ",opening_hours,business_status,place_id,plus_code,type,rating,photos,price_level,user_ratings_total"
         )
-        # TODO: Fix 'reviews' keyword.
-        #   The 'reviews' keyword should be working in the base_url when querying and returning the reviews.
-        #   assignees: MarceloJordao01
-        #   labels: bug
+        # TODO: #7 Fix 'reviews' keyword.
