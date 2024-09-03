@@ -58,10 +58,7 @@ class CostComponents(BaseModel):
     ]
 
     # TODO: #9 Fix JSON schema validation error.
-
-    #   The schema from this should be either accept as valid by pydantic or ignored.
-    #   assignees: MarceloJordao01
-    #   labels: bug
+    # This causes the test_traffic_adjustment_valid_string_key to fail.
 
     # @field_validator("traffic_adjustment", mode="plain")
     # @classmethod

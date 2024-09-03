@@ -60,6 +60,8 @@ Siga as etapas abaixo para executar o microsserviço:
 
 - Python 3.12 ou superior
 - [Ambiente Virtual](https://docs.python.org/3/library/venv.html#venv-def) (recomendado)
+- Chave de API Google Maps
+- Chave de API TomTom
 
 #### Instalação de Dependências
 
@@ -68,6 +70,11 @@ Instale as dependências usando pip:
 ```bash
 pip install -r requirements.txt
 ```
+
+#### Configuração das variáveis de ambiente
+
+Renomeie o arquivo `.env_sample` em `src`, para `.env` e substitua os valores das chaves.
+
 
 ## Execução
 
@@ -82,7 +89,7 @@ export PYTHONPATH=$PWD/src
 Para iniciar o servidor FastAPI, apenas execute o arquivo `server.py`:
 
 ```bash
-python src/server.py
+uvicorn src/server:app --reload --port 3000 --host 0.0.0.0
 ```
 
 Este comando inicia o seu servidor FastAPI.

@@ -83,4 +83,4 @@ class TrafficCondition(BaseModel):
     incidents: Annotated[list[Incident], Field(default_factory=list)]
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
