@@ -1,7 +1,3 @@
-Aqui está a documentação atualizada para o seu serviço REST com FastAPI:
-
----
-
 # Microsserviço de Estimativa de Viagem
 
 ## Introdução
