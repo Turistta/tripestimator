@@ -6,8 +6,8 @@ class DefaultCostCalculator(BaseCostCalculator):
     def estimate_cost(
         self, distance: float, time_estimated: float, traffic_weight: float, fuel_price: float
     ) -> float:
-        fuel_cost = (distance / self.FUEL_EFFICIENCY) * fuel_price * traffic_weight
-        total_cost = self.BASE_COST + fuel_cost + ((time_estimated / 60) * self.TIME_FACTOR)
+        fuel_cost = ((distance / 1000) / self.FUEL_EFFICIENCY) * fuel_price * traffic_weight
+        total_cost = self.BASE_COST + fuel_cost + (time_estimated * self.TIME_FACTOR)
         return total_cost
 
     @property

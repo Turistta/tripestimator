@@ -17,7 +17,7 @@ class CostEstimationParams(BaseQueryParams):
     state: Annotated[
         str, Field(..., description="The state for which to estimate the cost.", examples=["GO", "RS", "SP"])
     ]
-    distance: Annotated[float, Field(..., gt=0, description="The distance of the travel in kilometers")]
+    distance: Annotated[float, Field(..., gt=0, description="The distance of the travel in meters")]
     time_estimated: Annotated[int, Field(..., gt=0, description="The estimated time of travel in minutes")]
     # TODO: #8 Validate time assignment compatiblity across the app (seconds/minutes).
     traffic_condition: Annotated[
@@ -42,8 +42,8 @@ class CostComponents(BaseModel):
         Union[TrafficCondition, float],
         Field(
             default=1.0,
-            ge=0.1,
-            le=2.0,
+            ge=1.0,
+            le=1.5,
             description="Additional cost due to traffic conditions. It can be set as 'light', 'moderate' or 'heavy'",
         ),
     ]
@@ -60,7 +60,7 @@ class CostComponents(BaseModel):
     # TODO: #9 Fix JSON schema validation error.
     # This causes the test_traffic_adjustment_valid_string_key to fail.
 
-    # @field_validator("traffic_adjustment", mode="plain")
+    # @field_validator("traffic_adjustment", mode="before")
     # @classmethod
     # def validate_traffic_adjustment(cls, value) -> float:
     #     """Maps and normalizes the traffic adjustment value based on its weight. Raises an error for unknown values."""
@@ -73,6 +73,26 @@ class CostComponents(BaseModel):
     #     raise ValueError(
     #         "Invalid type for traffic_adjustment. Must be one of: 'light', 'moderate', 'heavy' or a numeric value."
     #     )
+
+    # @field_validator("traffic_adjustment", mode="before")
+    # @classmethod
+    # def validate_traffic_adjustment(cls, value) -> str:
+    #     """Valida e converte o valor do ajuste de tráfego para o formato string correto."""
+    #     # Se o valor for uma string, verificar se é válida
+    #     if isinstance(value, str):
+    #         if value not in get_args(TrafficCondition):
+    #             raise ValueError(f"Unknown traffic condition '{value}'")
+    #         return value
+
+    #     # Se o valor for float, converter para a string correspondente
+    #     elif isinstance(value, (float, int)):
+    #         # Mapeando o peso para a condição de tráfego correta
+    #         for condition, weight in TRAFFIC_CONDITION_WEIGHT.items():
+    #             if weight == value:
+    #                 return condition
+    #         raise ValueError(f"Invalid traffic weight '{value}'")
+
+    #     raise ValueError("Invalid type for traffic_adjustment. Must be one of: 'light', 'moderate', 'heavy' or a numeric value.")
 
     @field_validator("traffic_adjustment", mode="before")
     @classmethod

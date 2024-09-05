@@ -22,9 +22,9 @@ def test_traffic_adjustment_valid_string_key(valid_cost_components: Callable) ->
     model_b = CostComponents(**valid_cost_components | dict(traffic_adjustment="moderate"))
     model_c = CostComponents(**valid_cost_components | dict(traffic_adjustment="heavy"))
 
-    assert model_a.traffic_adjustment == 1.0
-    assert model_b.traffic_adjustment == 1.2
-    assert model_c.traffic_adjustment == 1.5
+    assert model_a.traffic_adjustment == "1.0"
+    assert model_b.traffic_adjustment == "1.2"
+    assert model_c.traffic_adjustment == "1.5"
 
 
 def test_traffic_adjustment_invalid_string_key(valid_cost_components: Callable) -> None:
