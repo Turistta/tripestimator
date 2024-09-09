@@ -50,7 +50,7 @@ class TourItineraryBuilder:
             transportation_method=transportation_method,
         )
 
-    def _get_state_from_route(plus_code) -> str:
+    def _get_state_from_route(self, plus_code) -> str:
         # TODO: #4 Implement actual logic to determine the state from the route.
 
         if plus_code is not None or plus_code != "":
