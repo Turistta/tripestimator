@@ -5,7 +5,7 @@ from builders.cost_builder import CostBuilder
 from builders.place_builder import PlaceBuilder
 from builders.route_builder import RouteBuilder
 from builders.traffic_builder import TrafficBuilder
-from models.place_models import PlaceQuery
+from models.place_models import PlaceQuery, Location
 from models.route_models import TransportationMode
 from models.tour_itinerary_models import TourItinerary
 from models.traffic_models import TrafficCondition
@@ -35,7 +35,7 @@ class TourItineraryBuilder:
         )
         cost_estimate = await self.cost_builder.build(
             distance=route.distance,
-            state=self._get_state_from_route(route),
+            state=self._get_state_from_route(start_point.location.plus_code),
             time_estimated=int(route.duration),
             # TODO: #3 Fix explicit conversion
             traffic_condition=self._calculate_traffic_impact(traffic_condition),
@@ -50,9 +50,21 @@ class TourItineraryBuilder:
             transportation_method=transportation_method,
         )
 
-    def _get_state_from_route(self, route) -> str:
+    def _get_state_from_route(plus_code) -> str:
         # TODO: #4 Implement actual logic to determine the state from the route.
-        return "GO"
+
+        if plus_code is not None or plus_code != "":
+            actual_state = plus_code[-2:]
+            valid_states = {"AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", 
+                            "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", 
+                            "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"}
+            if actual_state in valid_states:
+                return actual_state
+            else:
+                return "BR"
+        else:
+            return "BR"
+        
 
     def _calculate_traffic_impact(self, traffic_condition: TrafficCondition) -> str:
         # TODO: #5 Implement actual traffic condition calculator.
